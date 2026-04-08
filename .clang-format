@@ -110,5 +110,5 @@ EmptyLineAfterAccessModifier: Never
 EmptyLineBeforeAccessModifier: Always
 SpacesBeforeTrailingComments: 2
 MaxEmptyLinesToKeep: 1
-Cpp11BracedListStyle: true
+Cpp11BracedListStyle: false
 SeparateDefinitionBlocks: Leave
