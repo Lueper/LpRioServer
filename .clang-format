@@ -1,0 +1,114 @@
+# .clang-format
+
+Language: Cpp
+BasedOnStyle: LLVM
+
+# === Indentation ===
+UseTab: Always
+TabWidth: 4
+IndentWidth: 4
+ContinuationIndentWidth: 4
+AccessModifierOffset: -4
+IndentCaseLabels: true
+IndentPPDirectives: None
+NamespaceIndentation: None
+
+# === Brace Style — K&R (same line) ===
+BreakBeforeBraces: Attach
+InsertBraces: true
+
+# === Line Length ===
+ColumnLimit: 120
+
+# === Spacing ===
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyBlock: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpacesInAngles: false
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeCpp11BracedList: false
+
+# === Pointer & Reference Alignment (attach to type) ===
+PointerAlignment: Left
+ReferenceAlignment: Left
+DerivePointerAlignment: false
+
+# === Short Blocks / Statements ===
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortEnumsOnASingleLine: false
+AllowShortLambdasOnASingleLine: Inline
+
+# === Braces Wrapping (fine-tune Attach style) ===
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+
+# === Line Breaking ===
+AlwaysBreakTemplateDeclarations: Yes
+BreakConstructorInitializers: BeforeColon
+BreakInheritanceList: BeforeColon
+PackConstructorInitializers: CurrentLine
+BinPackArguments: true
+BinPackParameters: true
+
+# === Include Ordering ===
+SortIncludes: CaseInsensitive
+IncludeBlocks: Preserve
+IncludeCategories:
+  # 1. Corresponding header (auto-detected by clang-format)
+  # 2. Engine / framework headers
+  - Regex: '^"(Engine|GameFramework|CoreMinimal|Core)/'
+    Priority: 2
+  # 3. Project headers
+  - Regex: '^"'
+    Priority: 3
+  # 4. Third-party library headers (angle brackets, non-standard)
+  - Regex: '^<(rapidjson|nlohmann|spdlog|fmt|boost)/'
+    Priority: 4
+  # 5. Standard library headers
+  - Regex: '^<'
+    Priority: 5
+
+# === Alignment ===
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignConsecutiveMacros: false
+AlignEscapedNewlines: Left
+AlignOperands: Align
+AlignTrailingComments: true
+
+# === Misc ===
+FixNamespaceComments: true
+CompactNamespaces: false
+ReflowComments: true
+SortUsingDeclarations: true
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: Always
+SpacesBeforeTrailingComments: 2
+MaxEmptyLinesToKeep: 1
+Cpp11BracedListStyle: true
+SeparateDefinitionBlocks: Leave
