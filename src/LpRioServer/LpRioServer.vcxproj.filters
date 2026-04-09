@@ -21,7 +21,13 @@
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="LpLogger.cpp">
+    <ClCompile Include="Utility\LpLogger.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="LpServer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="example.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,19 +35,22 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LpConst.h">
+    <ClInclude Include="Common\LpConst.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LpEnum.h">
+    <ClInclude Include="Common\LpEnum.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LpDefine.h">
+    <ClInclude Include="Common\LpDefine.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LpLogger.h">
+    <ClInclude Include="Utility\LpLogger.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LpSingleton.h">
+    <ClInclude Include="Utility\LpSingleton.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="LpServer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

@@ -27,4 +27,6 @@
 #include <vector>
 
 #include "LpNetCore.h"
-#include "LpSingleton.h"
+
+#include "LpServer.h"
+#include "Utility/LpSingleton.h"

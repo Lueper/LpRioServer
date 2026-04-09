@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+
 #include "LpLogger.h"
 
 std::mutex LpLogger::m_mutex;

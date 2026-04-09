@@ -18,7 +18,7 @@ BreakBeforeBraces: Attach
 InsertBraces: true
 
 # === Line Length ===
-ColumnLimit: 120
+ColumnLimit: 0
 
 # === Spacing ===
 SpaceBeforeParens: ControlStatements
@@ -68,6 +68,7 @@ BraceWrapping:
 
 # === Line Breaking ===
 AlwaysBreakTemplateDeclarations: Yes
+BreakBeforeBinaryOperators: None
 BreakConstructorInitializers: BeforeColon
 BreakInheritanceList: BeforeColon
 PackConstructorInitializers: CurrentLine
