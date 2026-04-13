@@ -28,7 +28,7 @@
 *.lai
 *.la
 *.a
-*.lib
+#*.lib
 
 # Executables
 *.exe
@@ -69,7 +69,6 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
-[Ll]ib/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -114,7 +113,7 @@ StyleCopReport.xml
 *.ilk
 *.meta
 *.iobj
-*.pdb
+#*.pdb
 *.ipdb
 *.pgc
 *.pgd
