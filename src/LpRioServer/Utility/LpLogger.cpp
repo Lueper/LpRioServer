@@ -1,6 +1,4 @@
-﻿#include "pch.h"
-
-#include "LpLogger.h"
+﻿#include "LpLogger.h"
 
 std::mutex LpLogger::m_mutex;
 concurrent_queue<std::pair<ELogType, std::string>> LpLogger::m_logQueue;

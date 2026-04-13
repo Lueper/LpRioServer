@@ -1,6 +1,4 @@
-﻿#include "pch.h"
-
-#include "LpServer.h"
+﻿#include "LpServer.h"
 
 LpServer::LpServer() {
 

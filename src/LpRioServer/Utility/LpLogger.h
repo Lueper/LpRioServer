@@ -1,6 +1,12 @@
 ﻿#pragma once
 
-#include "pch.h"
+#include <concurrent_queue.h>
+#include <iomanip>
+#include <iostream>
+#include <mutex>
+#include <sstream>
+#include <sys/timeb.h>
+#include <windows.h>
 
 enum class ELogType : uint8_t {
 	debug,
