@@ -1,5 +1,15 @@
 ﻿#include "LpServer.h"
 
-int wmain(int argc, wchar_t* argv[]) {
+int main(int argc, char* argv[]) {
+	std::shared_ptr<LpServer> lpServer = std::make_shared<LpServer>();
 
+	if (lpServer->Init() == false) {
+		LpLogger::LOG_ERROR("Server initialize failed");
+		return -1;
+	}
+
+	LpLogger::LOG_INFO("Server Start");
+	lpServer->Start();
+
+	return 0;
 }
