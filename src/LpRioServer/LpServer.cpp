@@ -50,14 +50,18 @@ bool LpServer::Init() {
 
 void LpServer::Start() {
 	m_running = true;
+
+	LOG_INFO("Server Start");
 }
 
 void LpServer::Stop() {
 	m_running = false;
+
+	LOG_INFO("Server Stop");
 }
 
 void LpServer::Release() {
-
+	LOG_INFO("Server Release");
 }
 
 void LpServer::Run() {

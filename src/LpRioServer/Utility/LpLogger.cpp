@@ -3,39 +3,12 @@
 std::mutex LpLogger::m_mutex;
 concurrent_queue<std::pair<ELogType, std::string>> LpLogger::m_logQueue;
 
-void LpLogger::LOG(ELogType logType, const std::string& msg) {
-	std::ostringstream os;
-	struct _timeb _time;
-	tm t;
+void LpLogger::Log(ELogType logType, const std::string& msg) {
+	Print(logType, FormatLog(logType, msg));
+}
 
-	_ftime64_s(&_time);
-	localtime_s(&t, &(_time.time));
-
-	// [yyyy-mm-dd hh:mm:ss.ms]
-	os << t.tm_year + 1900 << ("-");
-
-	os << std::setfill(('0')) << std::setw(2) << t.tm_mon + 1 << ("-");
-
-	os << std::setfill(('0')) << std::setw(2) << t.tm_mday << (" ");
-
-	os << std::setfill(('0')) << std::setw(2) << t.tm_hour << (":");
-
-	os << std::setfill(('0')) << std::setw(2) << t.tm_min << (":");
-
-	os << std::setfill(('0')) << std::setw(2) << t.tm_sec << (".");
-
-	os << std::setfill(('0')) << std::setw(3) << _time.millitm << (" ");
-
-	// LogType
-	os << std::setfill((' ')) << std::setw(6) << std::left << LOG_DESC[(int)logType] << ("[");
-
-	// ThreadID
-	std::thread::id threadID = std::this_thread::get_id();
-	os << threadID << ("] ");
-
-	os << msg << "\n";
-
-	PushLog(logType, os.str());
+void LpLogger::LogAsync(ELogType logType, const std::string& msg) {
+	PushLog(logType, FormatLog(logType, msg));
 }
 
 void LpLogger::Update() {
@@ -44,6 +17,30 @@ void LpLogger::Update() {
 	while (m_logQueue.try_pop(log)) {
 		Print(log.first, log.second);
 	}
+}
+
+std::string LpLogger::FormatLog(ELogType logType, const std::string& msg) {
+	std::ostringstream os;
+	struct _timeb _time;
+	tm t;
+
+	_ftime64_s(&_time);
+	localtime_s(&t, &(_time.time));
+
+	// [yyyy-mm-dd hh:mm:ss.ms]
+	os << t.tm_year + 1900 << "-"
+	   << std::setfill('0') << std::setw(2) << t.tm_mon + 1 << "-"
+	   << std::setfill('0') << std::setw(2) << t.tm_mday << " "
+	   << std::setfill('0') << std::setw(2) << t.tm_hour << ":"
+	   << std::setfill('0') << std::setw(2) << t.tm_min << ":"
+	   << std::setfill('0') << std::setw(2) << t.tm_sec << "."
+	   << std::setfill('0') << std::setw(3) << _time.millitm << " ";
+	// LogType
+	os << std::setfill(' ') << std::setw(6) << std::left << LOG_DESC[(int)logType] << "[";
+	// ThreadID
+	os << std::this_thread::get_id() << "] " << msg << "\n";
+
+	return os.str();
 }
 
 void LpLogger::PushLog(ELogType logType, const std::string& str) {
