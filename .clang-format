@@ -15,7 +15,8 @@ NamespaceIndentation: None
 
 # === Brace Style — K&R (same line) ===
 BreakBeforeBraces: Attach
-InsertBraces: true
+InsertBraces: false
+KeepEmptyLinesAtTheStartOfBlocks: true
 
 # === Line Length ===
 ColumnLimit: 0

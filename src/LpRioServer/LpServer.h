@@ -9,11 +9,12 @@
 // mswsock.h보다 먼저 선언
 #include <ws2tcpip.h>
 
-#include <mswsock.h>
 #include <iostream>
+#include <mswsock.h>
 
-#include "yaml-cpp/yaml.h"
+#include "Common/LpDefine.h"
 #include "Utility/LpLogger.h"
+#include "yaml-cpp/yaml.h"
 
 class LpServer {
 public:
@@ -29,9 +30,16 @@ private:
 	void Run();
 
 	SOCKET m_socket;
+	HANDLE m_iocp = nullptr;
+	OVERLAPPED m_overlapped = {};
 	LPFN_ACCEPTEX m_lpfnAcceptEx = nullptr;
 	LPFN_GETACCEPTEXSOCKADDRS m_lpfnGetAcceptExSockaddrs = nullptr;
 	RIO_EXTENSION_FUNCTION_TABLE m_rio = {};
+	RIO_CQ m_rioCQ = RIO_INVALID_CQ;
+	RIO_BUFFERID m_recvBufId = RIO_INVALID_BUFFERID;
+	RIO_BUFFERID m_sendBufId = RIO_INVALID_BUFFERID;
+	char* m_recvPool = nullptr;
+	char* m_sendPool = nullptr;
 
 	std::atomic<bool> m_running;
 };
