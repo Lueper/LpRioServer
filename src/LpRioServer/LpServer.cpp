@@ -16,7 +16,7 @@ bool LpServer::Init() {
 	}
 
 	// 2) Bind Function
-	m_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
+	m_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED || WSA_FLAG_REGISTERED_IO);
 	if (m_socket == INVALID_SOCKET) {
 		return false;
 	}
@@ -60,7 +60,7 @@ bool LpServer::Init() {
 		return false;
 
 	m_iocp = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
-	if (m_iocp == nullptr)
+	if (m_iocp == NULL)
 		return false;
 
 	RIO_NOTIFICATION_COMPLETION rioNotify = {};
@@ -82,23 +82,29 @@ bool LpServer::Init() {
 	if (bind(m_socket, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) == SOCKET_ERROR)
 		return false;
 
-	// 4) Listen
-	if (listen(m_socket, SOMAXCONN) == SOCKET_ERROR)
-		return false;
-
-	if (CreateIoCompletionPort(reinterpret_cast<HANDLE>(m_socket), m_iocp, CK_ACCEPT, 0) == nullptr)
-		return false;
-
-	// Initial RIO notification
-	m_rio.RIONotify(m_rioCQ);
-
 	return true;
 }
 
 void LpServer::Start() {
 	m_running = true;
 
-	LOG_INFO("Server Start");
+		// 4) Listen
+	if (listen(m_socket, SOMAXCONN) == SOCKET_ERROR)
+		return;
+
+	if (CreateIoCompletionPort(reinterpret_cast<HANDLE>(m_socket), m_iocp, CK_ACCEPT, 0) == nullptr)
+		return;
+
+	// Initial RIO notification
+	m_rio.RIONotify(m_rioCQ);
+
+	for (ULONG i = 0; i < ACCEPT_POOL_SIZE; i++) {
+		PostAccept();
+	}
+
+	LOG_INFO("Server Start Success");
+
+	Run();
 }
 
 void LpServer::Stop() {
@@ -112,5 +118,25 @@ void LpServer::Release() {
 }
 
 void LpServer::Run() {
+}
+
+bool LpServer::PostAccept() {
+	AcceptContext* actx = new AcceptContext();
+
+	actx->acceptSock = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
+	if (actx->acceptSock == INVALID_SOCKET) {
+		delete actx;
+		return false;
+	}
+
+	DWORD bytes = 0;
+	BOOL result = m_lpfnAcceptEx(m_socket, actx->acceptSock, actx->addrBuf, 0, ADDR_LEN, ADDR_LEN, &bytes, &actx->overlapped);
+	if (result != 0) {
+		closesocket(actx->acceptSock);
+		delete actx;
+		return false;
+	}
+
+	return true;
 
 }

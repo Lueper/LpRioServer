@@ -29,6 +29,8 @@ public:
 private:
 	void Run();
 
+	bool PostAccept();
+
 	SOCKET m_socket;
 	HANDLE m_iocp = nullptr;
 	OVERLAPPED m_overlapped = {};
