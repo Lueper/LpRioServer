@@ -16,6 +16,12 @@
 #include "Utility/LpLogger.h"
 #include "yaml-cpp/yaml.h"
 
+struct AcceptContext {
+	OVERLAPPED overlapped = {};
+	SOCKET acceptSock = INVALID_SOCKET;
+	char addrBuf[ADDR_LEN * 2] = { 0, };
+};
+
 class LpServer {
 public:
 	LpServer();
@@ -29,6 +35,9 @@ public:
 private:
 	void Run();
 
+	void WorkerThread();
+	void OnAccept(AcceptContext* actx);
+	void OnRioCompletion();
 	bool PostAccept();
 
 	SOCKET m_socket;
@@ -44,4 +53,5 @@ private:
 	char* m_sendPool = nullptr;
 
 	std::atomic<bool> m_running;
+	std::vector<std::thread*> m_ioThreadVec;
 };

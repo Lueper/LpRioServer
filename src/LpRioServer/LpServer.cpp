@@ -118,6 +118,60 @@ void LpServer::Release() {
 }
 
 void LpServer::Run() {
+	int threadCount = std::thread::hardware_concurrency();
+
+	for (int i = 0; i < threadCount; i++) {
+		std::thread* thread = new std::thread([this] {
+			WorkerThread();
+		});
+		m_ioThreadVec.push_back(thread);
+	}
+
+	for (auto* thread : m_ioThreadVec) {
+		if (thread->joinable())
+			thread->join();
+	}
+	m_ioThreadVec.clear();
+}
+
+void LpServer::WorkerThread() {
+	while (m_running) {
+		DWORD bytesTransferred = 0;
+		ULONG_PTR completionKey = 0;
+		OVERLAPPED* overlapped = nullptr;
+
+		BOOL success = GetQueuedCompletionStatus(m_iocp, &bytesTransferred, &completionKey, &overlapped, INFINITE);
+
+		if (completionKey == CK_SHUTDOWN)
+			break;
+
+		if (overlapped == nullptr) {
+			DWORD error = WSAGetLastError();
+			LOG_ERROR("overlapped is null: %lu", error);
+			continue;
+		}
+
+		auto actx = (AcceptContext*)overlapped;
+
+		if (success == FALSE) {
+			if (completionKey == CK_ACCEPT) {
+				closesocket(actx->acceptSock);
+				delete actx;
+				
+				PostAccept();
+			}
+			continue;
+		}
+
+		switch (completionKey) {
+			case CK_ACCEPT:
+				OnAccept(actx);
+				break;
+			case CK_RIO:
+				OnRioCompletion();
+				break;
+		}
+	}
 }
 
 bool LpServer::PostAccept() {
@@ -138,5 +192,12 @@ bool LpServer::PostAccept() {
 	}
 
 	return true;
+}
+
+void LpServer::OnAccept(AcceptContext* actx) {
+
+}
+
+void LpServer::OnRioCompletion() {
 
 }
