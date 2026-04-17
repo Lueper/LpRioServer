@@ -22,6 +22,14 @@ struct AcceptContext {
 	char addrBuf[ADDR_LEN * 2] = { 0, };
 };
 
+struct ConnectionContext {
+	SOCKET sock;
+	RIO_RQ rq;
+	RIO_BUF recvBuf;
+	RIO_BUF sendBuf;
+	ULONG index;
+};
+
 class LpServer {
 public:
 	LpServer();
@@ -39,6 +47,8 @@ private:
 	void OnAccept(AcceptContext* actx);
 	void OnRioCompletion();
 	bool PostAccept();
+	void ProcessRecv(RIORESULT result);
+	void ProcessSend(RIORESULT result);
 
 	SOCKET m_socket;
 	HANDLE m_iocp = nullptr;

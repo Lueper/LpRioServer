@@ -199,5 +199,57 @@ void LpServer::OnAccept(AcceptContext* actx) {
 }
 
 void LpServer::OnRioCompletion() {
+	RIORESULT results[RIO_RESULTS_SIZE];
 
+	ULONG count = m_rio.RIODequeueCompletion(m_rioCQ, results, RIO_RESULTS_SIZE);
+
+	if (count == 0)
+		return;
+
+	if (count == RIO_CORRUPT_CQ) {
+		// Shutdown();
+	}
+
+	for (ULONG i = 0; i < count; i++) {
+		ConnectionContext* cctx = (ConnectionContext*)results[i].SocketContext;
+		if (cctx == nullptr) {
+			DWORD error = WSAGetLastError();
+			LOG_ERROR("ConnectionContext is null: %lu", error);
+			continue;
+		}
+
+		if (results[i].Status != 0) {
+			LOG_ERROR("RIOResult error: %ld", results[i].Status);
+			closesocket(cctx->sock);
+			delete cctx;
+			continue;
+		}
+
+		EIoType ioType = (EIoType)results[i].RequestContext;
+		switch (ioType) {
+			case EIoType::Recv:
+				ProcessRecv(results[i]);
+
+				if (m_rio.RIOReceive(cctx->rq, &cctx->recvBuf, 1, 0, (PVOID)EIoType::Recv) == false) {
+					DWORD error = WSAGetLastError();
+					LOG_ERROR("RIOReceive error: %lu", error);
+					closesocket(cctx->sock);
+					delete cctx;
+				}
+				break;
+			case EIoType::Send:
+				ProcessSend(results[i]);
+				break;
+		}
+	}
+
+	m_rio.RIONotify(m_rioCQ);
+}
+
+void LpServer::ProcessRecv(RIORESULT result) {
+	LOG_DEBUG("Recv: %u bytes", result.BytesTransferred);
+}
+
+void LpServer::ProcessSend(RIORESULT result) {
+	LOG_DEBUG("Send: %u bytes", result.BytesTransferred);
 }
