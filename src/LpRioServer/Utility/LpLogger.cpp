@@ -3,14 +3,6 @@
 std::mutex LpLogger::m_mutex;
 concurrent_queue<std::pair<ELogType, std::string>> LpLogger::m_logQueue;
 
-void LpLogger::Log(ELogType logType, const std::string& msg) {
-	Print(logType, FormatLog(logType, msg));
-}
-
-void LpLogger::LogAsync(ELogType logType, const std::string& msg) {
-	PushLog(logType, FormatLog(logType, msg));
-}
-
 void LpLogger::Update() {
 	std::pair<ELogType, std::string> log;
 
@@ -19,8 +11,7 @@ void LpLogger::Update() {
 	}
 }
 
-std::string LpLogger::FormatLog(ELogType logType, const std::string& msg) {
-	std::ostringstream os;
+void LpLogger::FormatLog(std::ostringstream& os, ELogType logType) {
 	struct _timeb _time;
 	tm t;
 
@@ -38,9 +29,7 @@ std::string LpLogger::FormatLog(ELogType logType, const std::string& msg) {
 	// LogType
 	os << std::setfill(' ') << std::setw(6) << std::left << LOG_DESC[(int)logType] << "[";
 	// ThreadID
-	os << std::this_thread::get_id() << "] " << msg << "\n";
-
-	return os.str();
+	os << std::this_thread::get_id() << "] ";
 }
 
 void LpLogger::PushLog(ELogType logType, const std::string& str) {

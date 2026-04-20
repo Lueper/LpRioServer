@@ -20,28 +20,43 @@ const std::string LOG_DESC[]{ "DEBUG", "INFO", "WARN", "ERROR", "FATAL" };
 
 using namespace Concurrency;
 
-#ifdef USE_ASYNC_LOG
-#define LOG_DEBUG(msg) LpLogger::LogAsync(ELogType::debug, msg)
-#define LOG_INFO(msg) LpLogger::LogAsync(ELogType::info, msg)
-#define LOG_WARN(msg) LpLogger::LogAsync(ELogType::warn, msg)
-#define LOG_ERROR(msg) LpLogger::LogAsync(ELogType::error, msg)
-#define LOG_FATAL(msg) LpLogger::LogAsync(ELogType::fatal, msg)
-#else
-#define LOG_DEBUG(msg) LpLogger::Log(ELogType::debug, msg)
-#define LOG_INFO(msg) LpLogger::Log(ELogType::info, msg)
-#define LOG_WARN(msg) LpLogger::Log(ELogType::warn, msg)
-#define LOG_ERROR(msg) LpLogger::Log(ELogType::error, msg)
-#define LOG_FATAL(msg) LpLogger::Log(ELogType::fatal, msg)
-#endif
+#define LOG_DEBUG(...)		LpLogger::Log(ELogType::debug, __VA_ARGS__)
+#define LOG_INFO(...)		LpLogger::Log(ELogType::info, __VA_ARGS__)
+#define LOG_WARN(...)		LpLogger::Log(ELogType::warn, __VA_ARGS__)
+#define LOG_ERROR(...)		LpLogger::Log(ELogType::error, __VA_ARGS__)
+#define LOG_FATAL(...)		LpLogger::Log(ELogType::fatal, __VA_ARGS__)
 
 class LpLogger {
 public:
-	static void Log(ELogType logType, const std::string& msg);
-	static void LogAsync(ELogType logType, const std::string& msg);
+	template <typename... Args>
+	static void Log(ELogType logType, Args... args) {
+		std::ostringstream os;
+
+		FormatLog(os, logType);
+		MergeArgs(os, args...);
+		os << "\n";
+
+		Write(logType, os.str());
+	}
+
 	static void Update();
 
 private:
-	static std::string FormatLog(ELogType logType, const std::string& str);
+	template <typename... Args>
+	static void MergeArgs(std::ostringstream& os, Args... args) {
+		int merge[] = { 0, (os << args, 0)... };
+		static_cast<void>(merge);
+	}
+
+	static void Write(ELogType logType, const std::string& str) {
+#ifdef USE_ASYNC_LOG
+		PushLog(logType, str);
+#else
+		Print(logType, str);
+#endif
+	}
+
+	static void FormatLog(std::ostringstream& os, ELogType logType);
 	static void PushLog(ELogType logType, const std::string& str);
 	static void Print(ELogType logType, const std::string& str);
 	static void SetColor(ELogType logType);
