@@ -24,5 +24,3 @@
 #include <vector>
 #include <windows.h>
 #include <winsock2.h>
-
-#include "LpNetCore.h"

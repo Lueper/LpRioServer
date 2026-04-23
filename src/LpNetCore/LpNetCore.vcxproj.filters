@@ -24,6 +24,12 @@
     <ClInclude Include="LpSocketCore.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="LpIocpCore.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="LpRioCore.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LpNetCore.cpp">
@@ -33,6 +39,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="LpSocketCore.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="LpIocpCore.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="LpRioCore.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
