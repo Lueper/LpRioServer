@@ -151,8 +151,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="LpGlobal.h" />
     <ClInclude Include="LpIocpCore.h" />
     <ClInclude Include="LpNetCore.h" />
+    <ClInclude Include="LpNetServer.h" />
     <ClInclude Include="LpRioCore.h" />
     <ClInclude Include="LpSocketCore.h" />
     <ClInclude Include="pch.h" />
@@ -160,6 +162,7 @@
   <ItemGroup>
     <ClCompile Include="LpIocpCore.cpp" />
     <ClCompile Include="LpNetCore.cpp" />
+    <ClCompile Include="LpNetServer.cpp" />
     <ClCompile Include="LpRioCore.cpp" />
     <ClCompile Include="LpSocketCore.cpp" />
     <ClCompile Include="pch.cpp">

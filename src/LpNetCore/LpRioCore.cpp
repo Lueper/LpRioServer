@@ -14,8 +14,8 @@ SOCKET LpRioCore::CreateRioSocket() {
 	return ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED | WSA_FLAG_REGISTERED_IO);
 }
 
-RIO_CQ LpRioCore::CreateRioCompletionQueue(RIO_EXTENSION_FUNCTION_TABLE& rio, DWORD cqSize, RIO_NOTIFICATION_COMPLETION* notification) {
-	return rio.RIOCreateCompletionQueue(cqSize, notification);
+RIO_CQ LpRioCore::CreateRioCompletionQueue(RIO_EXTENSION_FUNCTION_TABLE& rio, DWORD cqSize, RIO_NOTIFICATION_COMPLETION* rioNotify) {
+	return rio.RIOCreateCompletionQueue(cqSize, rioNotify);
 }
 
 RIO_RQ LpRioCore::CreateRioRequestQueue(RIO_EXTENSION_FUNCTION_TABLE& rio, SOCKET socket, DWORD maxPendingRecv, DWORD maxRecvBuffers, DWORD maxPendingSend, DWORD maxSendBuffers, RIO_CQ recvCQ, RIO_CQ sendCQ, PVOID context) {
