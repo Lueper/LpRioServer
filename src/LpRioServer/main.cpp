@@ -1,13 +1,9 @@
 ﻿#include "LpServer.h"
 
 int main(int argc, char* argv[]) {
-	std::shared_ptr<LpServer> lpServer = std::make_shared<LpServer>();
+	LpNetServer* lpServer = new LpNetServer();
 
-	if (lpServer->Init() == false) {
-		LOG_ERROR("Server initialize failed: %d", WSAGetLastError());
-		return -1;
-	}
-
+	lpServer->Init(ENetMode::RIO);
 	lpServer->Start();
 
 	return 0;
