@@ -36,7 +36,9 @@ public:
 	static LPFN_CONNECTEX				ConnectEx;
 	static LPFN_DISCONNECTEX			DisconnectEx;
 
-private:
+public:
 	HANDLE m_iocp = nullptr;
 	OVERLAPPED m_overlapped = {};
+
+private:
 };

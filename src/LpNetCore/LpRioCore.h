@@ -15,6 +15,7 @@ public:
 	static ULONG PopRioEvent(RIO_EXTENSION_FUNCTION_TABLE& rio, RIO_CQ cq, RIORESULT* results, ULONG size);
 	static bool NotifyRio(RIO_EXTENSION_FUNCTION_TABLE& rio, RIO_CQ cq);
 
+public:
 	RIO_EXTENSION_FUNCTION_TABLE m_rio = {};
 	RIO_NOTIFICATION_COMPLETION m_rioNotify = {};
 	RIO_CQ m_rioCQ = RIO_INVALID_CQ;
