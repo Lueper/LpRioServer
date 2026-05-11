@@ -18,7 +18,27 @@ LpIocpCore::~LpIocpCore() {
 }
 
 bool LpIocpCore::Init() {
-	return false;
+	m_socket = CreateIocpSocket();
+	if (m_socket == INVALID_SOCKET)
+		return false;
+
+	if (!LoadExFunction(m_socket, WSAID_ACCEPTEX, (LPVOID*)&AcceptEx))
+		return false;
+
+	if (!LoadExFunction(m_socket, WSAID_GETACCEPTEXSOCKADDRS, (LPVOID*)&GetAcceptExSockaddrs))
+		return false;
+
+	m_iocp = CreateIocpHandle();
+	if (m_iocp == NULL)
+		return false;
+
+	if (!RegisterIocpHandle(m_socket, m_iocp, CK_ACCEPT))
+		return false;
+
+	if (!SetReuseAddr(m_socket, true))
+		return false;
+
+	return true;
 }
 
 void LpIocpCore::Start() {
