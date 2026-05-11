@@ -21,19 +21,19 @@
     <ClInclude Include="LpNetCore.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LpSocketCore.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="LpNetServer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LpIocpCore.h">
+    <ClInclude Include="Core\LpIocpCore.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LpRioCore.h">
+    <ClInclude Include="Core\LpRioCore.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="LpGlobal.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LpSocketCore.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,16 +44,16 @@
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="LpSocketCore.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="LpNetServer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="LpIocpCore.cpp">
+    <ClCompile Include="Core\LpIocpCore.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="LpRioCore.cpp">
+    <ClCompile Include="Core\LpRioCore.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\LpSocketCore.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

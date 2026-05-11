@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include "LpGlobal.h"
-#include "LpSocketCore.h"
-#include "LpIocpCore.h"
-#include "LpRioCore.h"
+#include "Core/LpSocketCore.h"
+#include "Core/LpIocpCore.h"
+#include "Core/LpRioCore.h"
 
 #include "LpNetServer.h"
