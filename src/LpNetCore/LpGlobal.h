@@ -16,6 +16,20 @@ const ULONG MAX_PENDING_SENDS = 1;
 const ULONG CQ_SIZE = MAX_CONNECTIONS_COUNT * (MAX_PENDING_RECVS + MAX_PENDING_SENDS);
 const ULONG RIO_RESULTS_SIZE = 256;
 
+struct AcceptContext {
+	OVERLAPPED overlapped = {};
+	SOCKET acceptSock = INVALID_SOCKET;
+	char addrBuf[ADDR_LEN * 2] = { 0, };
+};
+
+struct ConnectionContext {
+	SOCKET sock;
+	RIO_RQ rq;
+	RIO_BUF recvBuf;
+	RIO_BUF sendBuf;
+	ULONG index;
+};
+
 enum class ENetMode {
 	None = 0,
 	IOCP = 1,

@@ -7,6 +7,7 @@ public:
 
 	virtual bool Init() = 0;
 	virtual void Start() = 0;
+	virtual void Run(int threadCount) = 0;
 
 	virtual ENetMode GetMode() { return ENetMode::None; };
 
@@ -36,6 +37,7 @@ protected:
 	bool PopIocpEvent(HANDLE iocp, DWORD bytes, ULONG_PTR completionKey, OVERLAPPED* overlapped, DWORD timeoutMs = INFINITE);
 	bool PushIocpEvent(HANDLE iocp, DWORD bytes = 0, ULONG_PTR completionKey = 0, OVERLAPPED* overlapped = nullptr);
 
+	int GetLastError();
 	std::string GetIpAddress(SOCKADDR_IN addr);
 
 	// RIO
@@ -51,10 +53,10 @@ protected:
 	bool NotifyRio(RIO_EXTENSION_FUNCTION_TABLE& rio, RIO_CQ cq);
 
 protected:
-	static LPFN_ACCEPTEX				AcceptEx;
-	static LPFN_GETACCEPTEXSOCKADDRS	GetAcceptExSockaddrs;
-	static LPFN_CONNECTEX				ConnectEx;
-	static LPFN_DISCONNECTEX			DisconnectEx;
+	LPFN_ACCEPTEX				AcceptEx = nullptr;
+	LPFN_GETACCEPTEXSOCKADDRS	GetAcceptExSockaddrs = nullptr;
+	LPFN_CONNECTEX				ConnectEx = nullptr;
+	LPFN_DISCONNECTEX			DisconnectEx = nullptr;
 
 private:
 };

@@ -7,8 +7,13 @@ public:
 
 	bool Init() override;
 	void Start() override;
+	void Run(int threadCount) override;
 
 	ENetMode GetMode() override { return ENetMode::IOCP; };
+
+private:
+	void PostAccept();
+	void Process();
 
 public:
 	SOCKET m_socket = INVALID_SOCKET;
@@ -16,5 +21,6 @@ public:
 	OVERLAPPED m_overlapped = {};
 
 private:
+	std::vector<std::thread*> m_ioThreadVec;
 	std::atomic<bool> m_running = false;
 };

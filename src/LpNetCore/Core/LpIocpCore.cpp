@@ -2,17 +2,14 @@
 
 #include "LpNetCore.h"
 
-LPFN_ACCEPTEX				LpIocpCore::AcceptEx = nullptr;
-LPFN_GETACCEPTEXSOCKADDRS	LpIocpCore::GetAcceptExSockaddrs = nullptr;
-LPFN_CONNECTEX				LpIocpCore::ConnectEx = nullptr;
-LPFN_DISCONNECTEX			LpIocpCore::DisconnectEx = nullptr;
-
 LpIocpCore::LpIocpCore() {
 	Startup();
 	std::cout << "Iocp 생성" << "\n";
 }
 
 LpIocpCore::~LpIocpCore() {
+	CloseHandle(m_iocp);
+	Close(m_socket);
 	Cleanup();
 	std::cout << "Iocp 소멸" << "\n";
 }
@@ -48,5 +45,80 @@ void LpIocpCore::Start() {
 	if (!Listen(m_socket))
 		return;
 
+	for (ULONG i = 0; i < ACCEPT_POOL_SIZE; i++) {
+		PostAccept();
+	}
+
 	m_running = true;
+}
+
+void LpIocpCore::Run(int threadCount) {
+	for (int i = 0; i < threadCount; i++) {
+		std::thread* thread = new std::thread([this] {
+			Process();
+			});
+		m_ioThreadVec.push_back(thread);
+	}
+
+	for (auto* thread : m_ioThreadVec) {
+		if (thread->joinable())
+			thread->join();
+	}
+	m_ioThreadVec.clear();
+}
+
+void LpIocpCore::PostAccept() {
+	AcceptContext* actx = new AcceptContext();
+
+	actx->acceptSock = CreateIocpSocket();
+	if (actx->acceptSock == INVALID_SOCKET) {
+		delete actx;
+		return;
+	}
+
+	DWORD bytes = 0;
+	if (!AcceptEx(m_socket, actx->acceptSock, actx->addrBuf, 0, ADDR_LEN, ADDR_LEN, &bytes, &actx->overlapped)) {
+		if (GetLastError() != ERROR_IO_PENDING)
+		Close(actx->acceptSock);
+		delete actx;
+		return;
+	}
+}
+
+void LpIocpCore::Process() {
+	while (m_running) {
+		DWORD bytesTransferred = 0;
+		ULONG_PTR completionKey = 0;
+		OVERLAPPED* overlapped = nullptr;
+
+		BOOL success = GetQueuedCompletionStatus(m_iocp, &bytesTransferred, &completionKey, &overlapped, INFINITE);
+
+		if (completionKey == CK_SHUTDOWN)
+			break;
+
+		if (overlapped == nullptr) {
+			int error = GetLastError();
+			std::cout << "overlapped is null: " << error << "\n";
+			continue;
+		}
+
+		auto actx = (AcceptContext*)overlapped;
+
+		if (success == FALSE) {
+			if (completionKey == CK_ACCEPT) {
+				closesocket(actx->acceptSock);
+				delete actx;
+
+				PostAccept();
+			}
+			continue;
+		}
+
+		switch (completionKey) {
+		case CK_ACCEPT:
+			// OnAccept(actx);
+			break;
+			break;
+		}
+	}
 }

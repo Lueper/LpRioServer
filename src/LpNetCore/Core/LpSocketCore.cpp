@@ -101,6 +101,10 @@ bool LpSocketCore::PushIocpEvent(HANDLE iocp, DWORD bytes, ULONG_PTR completionK
 	return ::PostQueuedCompletionStatus(iocp, bytes, completionKey, overlapped);
 }
 
+int LpSocketCore::GetLastError() {
+	return ::WSAGetLastError();
+}
+
 std::string LpSocketCore::GetIpAddress(SOCKADDR_IN addr) {
 	char ipAddress[INET_ADDRSTRLEN] = { 0, };
 	::inet_ntop(AF_INET, &addr.sin_addr, ipAddress, sizeof(ipAddress));
