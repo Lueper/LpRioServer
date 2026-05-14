@@ -16,7 +16,7 @@ bool LpServer::Init() {
 	}
 
 	// 2) Bind Function
-	m_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED || WSA_FLAG_REGISTERED_IO);
+	m_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED | WSA_FLAG_REGISTERED_IO);
 	if (m_socket == INVALID_SOCKET) {
 		return false;
 	}
@@ -24,7 +24,7 @@ bool LpServer::Init() {
 	DWORD bytes;
 	GUID acceptId = WSAID_ACCEPTEX;
 	int result = WSAIoctl(m_socket, SIO_GET_EXTENSION_FUNCTION_POINTER,
-						  &acceptId, sizeof(acceptId), &m_lpfnAcceptEx, sizeof(m_lpfnAcceptEx), &bytes, NULL, NULL);
+						  &acceptId, sizeof(acceptId), &AcceptEx, sizeof(AcceptEx), &bytes, NULL, NULL);
 	if (result != 0) {
 		closesocket(m_socket);
 		return false;
@@ -32,7 +32,7 @@ bool LpServer::Init() {
 
 	GUID sockaddrsId = WSAID_GETACCEPTEXSOCKADDRS;
 	result = WSAIoctl(m_socket, SIO_GET_EXTENSION_FUNCTION_POINTER,
-					  &sockaddrsId, sizeof(sockaddrsId), &m_lpfnGetAcceptExSockaddrs, sizeof(m_lpfnGetAcceptExSockaddrs), &bytes, NULL, NULL);
+					  &sockaddrsId, sizeof(sockaddrsId), &GetAcceptExSockaddrs, sizeof(GetAcceptExSockaddrs), &bytes, NULL, NULL);
 	if (result != 0) {
 		closesocket(m_socket);
 		return false;
@@ -184,7 +184,7 @@ bool LpServer::PostAccept() {
 	}
 
 	DWORD bytes = 0;
-	BOOL result = m_lpfnAcceptEx(m_socket, actx->acceptSock, actx->addrBuf, 0, ADDR_LEN, ADDR_LEN, &bytes, &actx->overlapped);
+	BOOL result = AcceptEx(m_socket, actx->acceptSock, actx->addrBuf, 0, ADDR_LEN, ADDR_LEN, &bytes, &actx->overlapped);
 	if (result != 0) {
 		closesocket(actx->acceptSock);
 		delete actx;
@@ -201,7 +201,7 @@ void LpServer::OnAccept(AcceptContext* actx) {
 	SOCKADDR* remoteAddr = nullptr;
 	int localLength = 0;
 	int remoteLength = 0;
-	m_lpfnGetAcceptExSockaddrs(actx->addrBuf, 0, ADDR_LEN, ADDR_LEN, &localAddr, &localLength, &remoteAddr, &remoteLength);
+	GetAcceptExSockaddrs(actx->addrBuf, 0, ADDR_LEN, ADDR_LEN, &localAddr, &localLength, &remoteAddr, &remoteLength);
 
 	SOCKADDR_IN* remote = (SOCKADDR_IN*)remoteAddr;
 	char remoteIp[INET_ADDRSTRLEN];

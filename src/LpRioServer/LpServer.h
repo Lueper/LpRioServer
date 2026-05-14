@@ -12,6 +12,7 @@
 #include <iostream>
 #include <mswsock.h>
 
+#include "LpNetCore.h"
 #include "Common/LpDefine.h"
 #include "Utility/LpLogger.h"
 #include "yaml-cpp/yaml.h"
@@ -53,8 +54,10 @@ private:
 	SOCKET m_socket;
 	HANDLE m_iocp = nullptr;
 	OVERLAPPED m_overlapped = {};
-	LPFN_ACCEPTEX m_lpfnAcceptEx = nullptr;
-	LPFN_GETACCEPTEXSOCKADDRS m_lpfnGetAcceptExSockaddrs = nullptr;
+	LPFN_ACCEPTEX AcceptEx = nullptr;
+	LPFN_GETACCEPTEXSOCKADDRS GetAcceptExSockaddrs = nullptr;
+	LPFN_CONNECTEX ConnectEx = nullptr;
+	LPFN_DISCONNECTEX DisconnectEx = nullptr;
 	RIO_EXTENSION_FUNCTION_TABLE m_rio = {};
 	RIO_CQ m_rioCQ = RIO_INVALID_CQ;
 	RIO_BUFFERID m_recvBufId = RIO_INVALID_BUFFERID;
