@@ -35,3 +35,8 @@ enum class ENetMode {
 	IOCP = 1,
 	RIO = 2
 };
+
+enum class EIoType {
+	Recv = 1,
+	Send = 2
+};

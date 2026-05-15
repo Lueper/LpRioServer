@@ -5,19 +5,16 @@ public:
 	LpNetServer();
 	~LpNetServer();
 
-	void Init(ENetMode mode);
+	void Init();
+	bool Init(ENetMode mode);
 	void Start();
 	void Stop();
 	void Release();
+
 private:
-	void Run();
+	std::shared_ptr<LpSocketCore> m_socketCore = nullptr;
+	SOCKET m_socket	= INVALID_SOCKET;
 
-	bool InitRioCore();
-
-	LpIocpCore* m_iocpCore;
-	LpRioCore* m_rioCore;
-
-	SOCKET m_socket = INVALID_SOCKET;
-
-	std::atomic<bool> m_running = false;
+	ENetMode m_eNetMode = ENetMode::None;
+	std::atomic<bool> m_running	= false;
 };
