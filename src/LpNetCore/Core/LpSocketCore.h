@@ -7,7 +7,7 @@ public:
 
 	virtual bool Init() = 0;
 	virtual void Start() = 0;
-	virtual void Run(int threadCount) = 0;
+	virtual void Stop() = 0;
 
 	virtual ENetMode GetMode() { return ENetMode::None; };
 
@@ -34,7 +34,7 @@ protected:
 	bool Close(SOCKET socket);
 	bool CloseHandle(HANDLE handle);
 
-	bool PopIocpEvent(HANDLE iocp, DWORD bytes, ULONG_PTR completionKey, OVERLAPPED* overlapped, DWORD timeoutMs = INFINITE);
+	bool PopIocpEvent(HANDLE iocp, DWORD& bytes, ULONG_PTR& completionKey, LPOVERLAPPED& overlapped, DWORD timeoutMs = INFINITE);
 	bool PushIocpEvent(HANDLE iocp, DWORD bytes = 0, ULONG_PTR completionKey = 0, OVERLAPPED* overlapped = nullptr);
 
 	int GetLastError();
@@ -57,6 +57,8 @@ protected:
 	LPFN_GETACCEPTEXSOCKADDRS	GetAcceptExSockaddrs = nullptr;
 	LPFN_CONNECTEX				ConnectEx = nullptr;
 	LPFN_DISCONNECTEX			DisconnectEx = nullptr;
+
+	std::atomic<bool> m_running = false;
 
 private:
 };

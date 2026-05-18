@@ -32,14 +32,15 @@ bool LpNetServer::Init(ENetMode mode) {
 }
 
 void LpNetServer::Start() {
-	int32_t threadCount = std::thread::hardware_concurrency();
+	m_running = true;
 
 	m_socketCore->Start();
-	m_socketCore->Run(threadCount);
 }
 
 void LpNetServer::Stop() {
 	m_running = false;
+
+	m_socketCore->Stop();
 }
 
 void LpNetServer::Release() {

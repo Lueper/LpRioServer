@@ -93,7 +93,7 @@ bool LpSocketCore::CloseHandle(HANDLE handle) {
 	return true;
 }
 
-bool LpSocketCore::PopIocpEvent(HANDLE iocp, DWORD bytes, ULONG_PTR completionKey, OVERLAPPED* overlapped, DWORD timeoutMs) {
+bool LpSocketCore::PopIocpEvent(HANDLE iocp, DWORD& bytes, ULONG_PTR& completionKey, LPOVERLAPPED& overlapped, DWORD timeoutMs) {
 	return ::GetQueuedCompletionStatus(iocp, &bytes, &completionKey, &overlapped, timeoutMs);
 }
 
