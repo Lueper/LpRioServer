@@ -7,8 +7,14 @@ public:
 
 	bool Init() override;
 	void Start() override;
+	void Stop() override;
 
 	ENetMode GetMode() override { return ENetMode::RIO; };
+
+private:
+	void Run();
+
+	void PostAccept();
 
 public:
 	SOCKET m_socket = INVALID_SOCKET;
@@ -24,5 +30,5 @@ public:
 	char* m_sendPool = nullptr;
 
 private:
-	std::atomic<bool> m_running = false;
+	std::vector<std::unique_ptr<std::thread>> m_ioThreadVec;
 };
