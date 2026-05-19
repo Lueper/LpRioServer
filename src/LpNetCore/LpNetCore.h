@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "pch.h"
+
 #include "LpGlobal.h"
 #include "Core/LpSocketCore.h"
 #include "Core/LpIocpCore.h"
