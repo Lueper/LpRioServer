@@ -7,13 +7,12 @@ public:
 
 	bool Init() override;
 	void Start() override;
+	void Run() override;
 	void Stop() override;
 
 	ENetMode GetMode() override { return ENetMode::RIO; };
 
 private:
-	void Run();
-
 	void PostAccept();
 
 public:
@@ -30,5 +29,4 @@ public:
 	char* m_sendPool = nullptr;
 
 private:
-	std::vector<std::unique_ptr<std::thread>> m_ioThreadVec;
 };

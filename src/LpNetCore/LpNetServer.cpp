@@ -35,6 +35,20 @@ void LpNetServer::Start() {
 	m_running = true;
 
 	m_socketCore->Start();
+
+	int threadCount = std::thread::hardware_concurrency();
+	for (int i = 0; i < threadCount; i++) {
+		std::unique_ptr<std::thread> thread = std::make_unique<std::thread>([this] {
+			m_socketCore->Run();
+		});
+		m_ioThreadVec.push_back(std::move(thread));
+	}
+
+	for (auto& thread : m_ioThreadVec) {
+		if (thread->joinable())
+			thread->join();
+	}
+	m_ioThreadVec.clear();
 }
 
 void LpNetServer::Stop() {

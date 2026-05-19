@@ -7,6 +7,7 @@ public:
 
 	virtual bool Init() = 0;
 	virtual void Start() = 0;
+	virtual void Run() = 0;
 	virtual void Stop() = 0;
 
 	virtual ENetMode GetMode() { return ENetMode::None; };
