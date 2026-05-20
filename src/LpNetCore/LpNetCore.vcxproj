@@ -161,6 +161,7 @@
     <ClInclude Include="LpNetCore.h" />
     <ClInclude Include="LpNetServer.h" />
     <ClInclude Include="Core\LpRioCore.h" />
+    <ClInclude Include="Utility\LpPool.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Utility\LpLogger.h" />
     <ClInclude Include="Utility\LpSingleton.h" />

@@ -8,5 +8,6 @@
 #include "Core/LpRioCore.h"
 #include "Utility/LpLogger.h"
 #include "Utility/LpSingleton.h"
+#include "Utility/LpPool.h"
 
 #include "LpNetServer.h"
