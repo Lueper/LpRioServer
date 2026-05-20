@@ -6,5 +6,7 @@
 #include "Core/LpSocketCore.h"
 #include "Core/LpIocpCore.h"
 #include "Core/LpRioCore.h"
+#include "Utility/LpLogger.h"
+#include "Utility/LpSingleton.h"
 
 #include "LpNetServer.h"

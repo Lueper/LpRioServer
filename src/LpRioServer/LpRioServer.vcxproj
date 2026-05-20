@@ -161,7 +161,6 @@
   <ItemGroup>
     <ClCompile Include="example.cpp" />
     <ClCompile Include="LpServer.cpp" />
-    <ClCompile Include="Utility\LpLogger.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -169,8 +168,6 @@
     <ClInclude Include="Common\LpDefine.h" />
     <ClInclude Include="Common\LpEnum.h" />
     <ClInclude Include="LpServer.h" />
-    <ClInclude Include="Utility\LpLogger.h" />
-    <ClInclude Include="Utility\LpSingleton.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LpNetCore\LpNetCore.vcxproj">
