@@ -14,22 +14,7 @@
 
 #include "LpNetCore.h"
 #include "Common/LpDefine.h"
-#include "Utility/LpLogger.h"
 #include "yaml-cpp/yaml.h"
-
-struct AcceptContext {
-	OVERLAPPED overlapped = {};
-	SOCKET acceptSock = INVALID_SOCKET;
-	char addrBuf[ADDR_LEN * 2] = { 0, };
-};
-
-struct ConnectionContext {
-	SOCKET sock;
-	RIO_RQ rq;
-	RIO_BUF recvBuf;
-	RIO_BUF sendBuf;
-	ULONG index;
-};
 
 class LpServer {
 public:
