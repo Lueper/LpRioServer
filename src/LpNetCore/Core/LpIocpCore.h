@@ -14,6 +14,10 @@ public:
 
 private:
 	void PostAccept();
+	void OnAccept(AcceptContext* actx);
+
+	void ProcessRecv(RIORESULT result);
+	void ProcessSend(RIORESULT result);
 
 public:
 	SOCKET m_socket = INVALID_SOCKET;
