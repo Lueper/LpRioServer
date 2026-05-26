@@ -83,6 +83,49 @@ void LpRioCore::Start() {
 	m_running = true;
 }
 
+void LpRioCore::Run() {
+	while (m_running) {
+		DWORD bytesTransferred = 0;
+		ULONG_PTR completionKey = 0;
+		OVERLAPPED* overlapped = nullptr;
+
+		BOOL success = PopIocpEvent(m_iocp, bytesTransferred, completionKey, overlapped, INFINITE);
+
+		if (completionKey == CK_SHUTDOWN)
+			break;
+
+		if (overlapped == nullptr) {
+			int error = GetLastError();
+			std::cout << "overlapped is null: " << error << "\n";
+			continue;
+		}
+
+		auto actx = (AcceptContext*)overlapped;
+
+		if (success == FALSE) {
+			if (completionKey == CK_ACCEPT) {
+				Close(actx->acceptSock);
+				delete actx;
+
+				PostAccept();
+			}
+			continue;
+		}
+
+		switch (completionKey) {
+			case CK_ACCEPT:
+				OnAccept(actx);
+				break;
+			case CK_RIO:
+				OnRioCompletion();
+				break;
+		}
+	}
+}
+
+void LpRioCore::Stop() {
+}
+
 void LpRioCore::PostAccept() {
 	AcceptContext* actx = new AcceptContext();
 

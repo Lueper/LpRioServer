@@ -52,46 +52,13 @@ void LpIocpCore::Start() {
 	m_running = true;
 }
 
-void LpIocpCore::Run(int threadCount) {
-	for (int i = 0; i < threadCount; i++) {
-		std::thread* thread = new std::thread([this] {
-			Process();
-			});
-		m_ioThreadVec.push_back(thread);
-	}
-
-	for (auto* thread : m_ioThreadVec) {
-		if (thread->joinable())
-			thread->join();
-	}
-	m_ioThreadVec.clear();
-}
-
-void LpIocpCore::PostAccept() {
-	AcceptContext* actx = new AcceptContext();
-
-	actx->acceptSock = CreateIocpSocket();
-	if (actx->acceptSock == INVALID_SOCKET) {
-		delete actx;
-		return;
-	}
-
-	DWORD bytes = 0;
-	if (!AcceptEx(m_socket, actx->acceptSock, actx->addrBuf, 0, ADDR_LEN, ADDR_LEN, &bytes, &actx->overlapped)) {
-		if (GetLastError() != ERROR_IO_PENDING)
-		Close(actx->acceptSock);
-		delete actx;
-		return;
-	}
-}
-
-void LpIocpCore::Process() {
+void LpIocpCore::Run() {
 	while (m_running) {
 		DWORD bytesTransferred = 0;
 		ULONG_PTR completionKey = 0;
 		OVERLAPPED* overlapped = nullptr;
 
-		BOOL success = GetQueuedCompletionStatus(m_iocp, &bytesTransferred, &completionKey, &overlapped, INFINITE);
+		BOOL success = PopIocpEvent(m_iocp, bytesTransferred, completionKey, overlapped, INFINITE);
 
 		if (completionKey == CK_SHUTDOWN)
 			break;
@@ -106,7 +73,7 @@ void LpIocpCore::Process() {
 
 		if (success == FALSE) {
 			if (completionKey == CK_ACCEPT) {
-				closesocket(actx->acceptSock);
+				Close(actx->acceptSock);
 				delete actx;
 
 				PostAccept();
@@ -121,6 +88,10 @@ void LpIocpCore::Process() {
 		}
 	}
 }
+
+void LpIocpCore::Stop() {
+}
+
 void LpIocpCore::PostAccept() {
 	AcceptContext* actx = new AcceptContext();
 
