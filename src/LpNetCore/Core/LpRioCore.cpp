@@ -169,7 +169,7 @@ void LpRioCore::OnAccept(AcceptContext* actx) {
 	cctx->sendBuf.Length = BUFFER_SIZE;
 	cctx->rq = m_rio.RIOCreateRequestQueue(cctx->sock, MAX_PENDING_RECVS, 1, MAX_PENDING_SENDS, 1, m_rioCQ, m_rioCQ, (PVOID)(ULONG_PTR)cctx);
 	if (cctx->rq == RIO_INVALID_RQ) {
-		closesocket(cctx->sock);
+		Close(cctx->sock);
 	}
 
 	delete actx;
@@ -192,14 +192,14 @@ void LpRioCore::OnRioCompletion() {
 	for (ULONG i = 0; i < count; i++) {
 		ConnectionContext* cctx = (ConnectionContext*)(ULONG_PTR)results[i].SocketContext;
 		if (cctx == nullptr) {
-			DWORD error = WSAGetLastError();
+			DWORD error = GetLastError();
 			LOG_ERROR("ConnectionContext is null: %lu", error);
 			continue;
 		}
 
 		if (results[i].Status != 0) {
 			LOG_ERROR("RIOResult error: %ld", results[i].Status);
-			closesocket(cctx->sock);
+			Close(cctx->sock);
 			delete cctx;
 			continue;
 		}
@@ -210,9 +210,9 @@ void LpRioCore::OnRioCompletion() {
 				ProcessRecv(results[i]);
 
 				if (m_rio.RIOReceive(cctx->rq, &cctx->recvBuf, 1, 0, (PVOID)EIoType::Recv) == false) {
-					DWORD error = WSAGetLastError();
+					DWORD error = GetLastError();
 					LOG_ERROR("RIOReceive error: %lu", error);
-					closesocket(cctx->sock);
+					Close(cctx->sock);
 					delete cctx;
 				}
 				break;
