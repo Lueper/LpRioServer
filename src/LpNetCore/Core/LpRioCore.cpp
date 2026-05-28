@@ -124,6 +124,7 @@ void LpRioCore::Run() {
 }
 
 void LpRioCore::Stop() {
+	m_running = false;
 }
 
 void LpRioCore::PostAccept() {
