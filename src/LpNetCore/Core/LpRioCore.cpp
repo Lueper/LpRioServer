@@ -126,7 +126,14 @@ void LpRioCore::Run() {
 }
 
 void LpRioCore::Stop() {
+	if (m_running == false)
+		return;
+
 	m_running = false;
+
+	for (int i = 0; i < m_threadCount; i++) {
+		PushIocpEvent(m_iocp, 0, CK_SHUTDOWN, nullptr);
+	}
 }
 
 void LpRioCore::PostAccept() {
@@ -149,7 +156,7 @@ void LpRioCore::PostAccept() {
 }
 
 void LpRioCore::OnAccept(AcceptContext* actx) {
-	setsockopt(actx->acceptSock, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, (char*)&m_socket, sizeof(m_socket));
+	SetUpdateAcceptSocket(actx->acceptSock, m_socket);
 
 	SOCKADDR* localAddr = nullptr;
 	SOCKADDR* remoteAddr = nullptr;
@@ -157,9 +164,7 @@ void LpRioCore::OnAccept(AcceptContext* actx) {
 	int remoteLength = 0;
 	GetAcceptExSockaddrs(actx->addrBuf, 0, ADDR_LEN, ADDR_LEN, &localAddr, &localLength, &remoteAddr, &remoteLength);
 
-	SOCKADDR_IN* remote = (SOCKADDR_IN*)remoteAddr;
-	char remoteIp[INET_ADDRSTRLEN];
-	inet_ntop(AF_INET, &remote->sin_addr, remoteIp, sizeof(remoteIp));
+	std::string ipAddress = GetIpAddress((SOCKADDR_IN&)*remoteAddr);
 
 	ConnectionContext* cctx = new ConnectionContext();
 	cctx->sock = actx->acceptSock;
