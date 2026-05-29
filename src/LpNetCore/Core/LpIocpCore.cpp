@@ -38,7 +38,9 @@ bool LpIocpCore::Init() {
 	return true;
 }
 
-void LpIocpCore::Start() {
+void LpIocpCore::Start(int threadCount) {
+	m_threadCount = threadCount;
+
 	if (!Bind(m_socket, SERVER_PORT))
 		return;
 

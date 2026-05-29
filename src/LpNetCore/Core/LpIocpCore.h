@@ -6,7 +6,7 @@ public:
 	~LpIocpCore();
 
 	bool Init() override;
-	void Start() override;
+	void Start(int threadCount) override;
 	void Run() override;
 	void Stop() override;
 

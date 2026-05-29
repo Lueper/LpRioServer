@@ -34,9 +34,11 @@ bool LpNetServer::Init(ENetMode mode) {
 void LpNetServer::Start() {
 	m_running = true;
 
-	m_socketCore->Start();
+	LOG_INFO("Server Started");
 
 	int threadCount = std::thread::hardware_concurrency();
+	m_socketCore->Start(threadCount);
+
 	for (int i = 0; i < threadCount; i++) {
 		std::unique_ptr<std::thread> thread = std::make_unique<std::thread>([this] {
 			m_socketCore->Run();
@@ -54,9 +56,11 @@ void LpNetServer::Start() {
 void LpNetServer::Stop() {
 	m_running = false;
 
+	LOG_INFO("Server Stopping...");
+
 	m_socketCore->Stop();
 }
 
 void LpNetServer::Release() {
-
+	LOG_INFO("Server Released");
 }

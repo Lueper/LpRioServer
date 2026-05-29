@@ -6,7 +6,7 @@ public:
 	virtual ~LpSocketCore() = default;
 
 	virtual bool Init() = 0;
-	virtual void Start() = 0;
+	virtual void Start(int threadCount) = 0;
 	virtual void Run() = 0;
 	virtual void Stop() = 0;
 
@@ -60,6 +60,7 @@ protected:
 	LPFN_DISCONNECTEX			DisconnectEx = nullptr;
 
 	std::atomic<bool> m_running = false;
+	int m_threadCount = 0;
 
 private:
 };

@@ -21,5 +21,6 @@ int main(int argc, char* argv[]) {
 	lpServer->Start();
 	lpServer->Release();
 
+	delete lpServer;
 	return 0;
 }

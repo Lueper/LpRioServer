@@ -71,7 +71,9 @@ bool LpRioCore::Init() {
 	return true;
 }
 
-void LpRioCore::Start() {
+void LpRioCore::Start(int threadCount) {
+	m_threadCount = threadCount;
+
 	if (!Bind(m_socket, SERVER_PORT))
 		return;
 
