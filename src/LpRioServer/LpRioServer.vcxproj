@@ -160,14 +160,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="example.cpp" />
-    <ClCompile Include="LpServer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\LpConst.h" />
     <ClInclude Include="Common\LpDefine.h" />
     <ClInclude Include="Common\LpEnum.h" />
-    <ClInclude Include="LpServer.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LpNetCore\LpNetCore.vcxproj">

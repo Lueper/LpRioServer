@@ -1,4 +1,4 @@
-﻿#include "LpServer.h"
+﻿#include "LpNetCore.h"
 
 #include <csignal>
 
