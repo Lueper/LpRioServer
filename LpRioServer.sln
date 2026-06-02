@@ -10,6 +10,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LpRioServer", "src\LpRioSer
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LpNetCore", "src\LpNetCore\LpNetCore.vcxproj", "{AF37B9A5-8AE8-4A1E-B350-EBB712324FAB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LpRioClient", "src\LpRioClient\LpRioClient.vcxproj", "{7E2A887D-CBC5-454B-BFBC-0F9CA8E1B1A5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF37B9A5-8AE8-4A1E-B350-EBB712324FAB} = {AF37B9A5-8AE8-4A1E-B350-EBB712324FAB}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -34,6 +39,14 @@ Global
 		{AF37B9A5-8AE8-4A1E-B350-EBB712324FAB}.Release|x64.Build.0 = Release|x64
 		{AF37B9A5-8AE8-4A1E-B350-EBB712324FAB}.Release|x86.ActiveCfg = Release|Win32
 		{AF37B9A5-8AE8-4A1E-B350-EBB712324FAB}.Release|x86.Build.0 = Release|Win32
+		{7E2A887D-CBC5-454B-BFBC-0F9CA8E1B1A5}.Debug|x64.ActiveCfg = Debug|x64
+		{7E2A887D-CBC5-454B-BFBC-0F9CA8E1B1A5}.Debug|x64.Build.0 = Debug|x64
+		{7E2A887D-CBC5-454B-BFBC-0F9CA8E1B1A5}.Debug|x86.ActiveCfg = Debug|Win32
+		{7E2A887D-CBC5-454B-BFBC-0F9CA8E1B1A5}.Debug|x86.Build.0 = Debug|Win32
+		{7E2A887D-CBC5-454B-BFBC-0F9CA8E1B1A5}.Release|x64.ActiveCfg = Release|x64
+		{7E2A887D-CBC5-454B-BFBC-0F9CA8E1B1A5}.Release|x64.Build.0 = Release|x64
+		{7E2A887D-CBC5-454B-BFBC-0F9CA8E1B1A5}.Release|x86.ActiveCfg = Release|Win32
+		{7E2A887D-CBC5-454B-BFBC-0F9CA8E1B1A5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
