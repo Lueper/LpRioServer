@@ -6,8 +6,10 @@ public:
 	~LpIocpCore();
 
 	bool Init() override;
-	void Start(int threadCount) override;
+	void StartListen(int threadCount) override;
+	void StartConnect(int threadCount) override;
 	void Run() override;
+	void RunClient() override;
 	void Stop() override;
 
 	ENetMode GetMode() override { return ENetMode::IOCP; };

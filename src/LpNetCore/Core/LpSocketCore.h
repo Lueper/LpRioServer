@@ -6,8 +6,10 @@ public:
 	virtual ~LpSocketCore() = default;
 
 	virtual bool Init() = 0;
-	virtual void Start(int threadCount) = 0;
+	virtual void StartListen(int threadCount) = 0;
+	virtual void StartConnect(int threadCount) = 0;
 	virtual void Run() = 0;
+	virtual void RunClient() = 0;
 	virtual void Stop() = 0;
 
 	virtual ENetMode GetMode() { return ENetMode::None; };
@@ -27,6 +29,7 @@ protected:
 	bool SetNodelay(SOCKET socket, BOOL optVal);
 	bool SetLinger(SOCKET socket, BOOL optVal, int time);
 	bool SetUpdateAcceptSocket(SOCKET socket, SOCKET listenSocket);
+	bool SetUpdateConnectSocket(SOCKET socket);
 	bool SetRecvBufSize(SOCKET socket, int size);
 	bool SetSendBufSize(SOCKET socket, int size);
 

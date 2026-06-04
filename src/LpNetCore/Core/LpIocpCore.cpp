@@ -25,6 +25,9 @@ bool LpIocpCore::Init() {
 	if (!LoadExFunction(m_socket, WSAID_GETACCEPTEXSOCKADDRS, (LPVOID*)&GetAcceptExSockaddrs))
 		return false;
 
+	if (!LoadExFunction(m_socket, WSAID_CONNECTEX, (LPVOID*)&ConnectEx))
+		return false;
+
 	m_iocp = CreateIocpHandle();
 	if (m_iocp == NULL)
 		return false;
@@ -38,7 +41,7 @@ bool LpIocpCore::Init() {
 	return true;
 }
 
-void LpIocpCore::Start(int threadCount) {
+void LpIocpCore::StartListen(int threadCount) {
 	m_threadCount = threadCount;
 
 	if (!Bind(m_socket, SERVER_PORT))
@@ -50,6 +53,34 @@ void LpIocpCore::Start(int threadCount) {
 	for (ULONG i = 0; i < ACCEPT_POOL_SIZE; i++) {
 		PostAccept();
 	}
+
+	m_running = true;
+}
+
+void LpIocpCore::StartConnect(int threadCount) {
+	m_threadCount = threadCount;
+
+	if (!Bind(m_socket, 0))
+		return;
+
+	SOCKADDR_IN addr = {};
+	addr.sin_family = AF_INET;
+	::inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
+	addr.sin_port = ::htons(SERVER_PORT);
+
+	ConnectContext* cctx = new ConnectContext();
+	cctx->ioType = EIoType::Connect;
+
+	if (!ConnectEx(m_socket, (SOCKADDR*)&addr, sizeof(addr), NULL, 0, NULL, &cctx->overlapped)) {
+		if (GetLastError() != ERROR_IO_PENDING) {
+			LOG_ERROR("Connect Failed: ", GetLastError());
+			Close(m_socket);
+			delete cctx;
+			return;
+		}
+	}
+
+	LOG_INFO("Connect Complete");
 
 	m_running = true;
 }
@@ -67,7 +98,7 @@ void LpIocpCore::Run() {
 
 		if (overlapped == nullptr) {
 			int error = GetLastError();
-			std::cout << "overlapped is null: " << error << "\n";
+			LOG_ERROR("overlapped is null: ", error);
 			continue;
 		}
 
@@ -88,6 +119,59 @@ void LpIocpCore::Run() {
 				OnAccept(actx);
 				break;
 		}
+
+		auto cctx = (ConnectContext*)overlapped;
+		if (cctx == nullptr)
+			continue;
+
+		switch (cctx->ioType) {
+			case EIoType::Connect: {
+				SetUpdateConnectSocket(actx->acceptSock);
+
+				ConnectContext* cctx = new ConnectContext();
+				cctx->ioType = EIoType::Send;
+				cctx->wsaBuf.buf = cctx->buf;
+				cctx->wsaBuf.len = BUFFER_SIZE;
+
+				DWORD recvLen = 0;
+				DWORD flags = 0;
+				if (::WSARecv(m_socket, &cctx->wsaBuf, 1, &recvLen, &flags, &cctx->overlapped, nullptr) == SOCKET_ERROR) {
+					if (::WSAGetLastError() != ERROR_IO_PENDING) {
+						LOG_ERROR("Recv Failed: ", ::WSAGetLastError());
+						Close(actx->acceptSock);
+						delete actx;
+						return;
+					}
+				}
+
+				LOG_INFO("Client Connected: ", actx->acceptSock);
+			}
+		}
+	}
+}
+
+void LpIocpCore::RunClient() {
+	while (true) {
+		std::string message;
+		std::getline(std::cin, message);
+		if (message == "exit")
+			break;
+
+		DWORD bytes = 0;
+		ConnectContext* cctx = new ConnectContext();
+		cctx->ioType = EIoType::Send;
+		cctx->wsaBuf.buf = cctx->buf;
+		cctx->wsaBuf.len = BUFFER_SIZE;
+
+		memcpy(&cctx->buf, message.c_str(), message.length());
+		cctx->wsaBuf.len = static_cast<ULONG>(message.length());
+
+		WSASend(
+			m_socket,
+			&cctx->wsaBuf,
+			1, &bytes, 0,
+			&cctx->overlapped,
+			NULL);
 	}
 }
 

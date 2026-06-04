@@ -71,7 +71,7 @@ bool LpRioCore::Init() {
 	return true;
 }
 
-void LpRioCore::Start(int threadCount) {
+void LpRioCore::StartListen(int threadCount) {
 	m_threadCount = threadCount;
 
 	if (!Bind(m_socket, SERVER_PORT))
@@ -81,6 +81,31 @@ void LpRioCore::Start(int threadCount) {
 		return;
 
 	m_rio.RIONotify(m_rioCQ);
+
+	m_running = true;
+}
+
+void LpRioCore::StartConnect(int threadCount) {
+	m_threadCount = threadCount;
+
+	if (!Bind(m_socket, 0))
+		return;
+
+	SOCKADDR_IN addr = {};
+	addr.sin_family = AF_INET;
+	::inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
+	addr.sin_port = ::htons(SERVER_PORT);
+
+	ConnectContext* cctx = new ConnectContext();
+	cctx->ioType = EIoType::Connect;
+
+	if (!ConnectEx(m_socket, (SOCKADDR*)&addr, sizeof(addr), NULL, 0, NULL, &cctx->overlapped)) {
+		if (GetLastError() != ERROR_IO_PENDING) {
+			Close(m_socket);
+			delete cctx;
+			return;
+		}
+	}
 
 	m_running = true;
 }
@@ -98,7 +123,7 @@ void LpRioCore::Run() {
 
 		if (overlapped == nullptr) {
 			int error = GetLastError();
-			std::cout << "overlapped is null: " << error << "\n";
+			LOG_ERROR("overlapped is null: ", error);
 			continue;
 		}
 
@@ -122,6 +147,28 @@ void LpRioCore::Run() {
 				OnRioCompletion();
 				break;
 		}
+	}
+}
+
+void LpRioCore::RunClient() {
+	while (true) {
+		std::string message;
+		std::getline(std::cin, message);
+		if (message == "exit")
+			break;
+
+		ConnectContext* cctx = new ConnectContext();
+		cctx->ioType = EIoType::Send;
+
+		memcpy(&cctx->wsaBuf, message.c_str(), message.length());
+		cctx->wsaBuf.len = static_cast<ULONG>(message.length());
+
+		WSASend(
+			m_socket,
+			&cctx->wsaBuf,
+			1, NULL, 0,
+			&cctx->overlapped,
+			NULL);
 	}
 }
 

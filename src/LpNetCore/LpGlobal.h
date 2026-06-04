@@ -16,10 +16,29 @@ const ULONG MAX_PENDING_SENDS = 1;
 const ULONG CQ_SIZE = MAX_CONNECTIONS_COUNT * (MAX_PENDING_RECVS + MAX_PENDING_SENDS);
 const ULONG RIO_RESULTS_SIZE = 256;
 
+enum class ENetMode {
+	None = 0,
+	IOCP = 1,
+	RIO = 2
+};
+
+enum class EIoType {
+	Connect = 1,
+	Recv = 2,
+	Send = 3
+};
+
 struct AcceptContext {
 	OVERLAPPED overlapped = {};
 	SOCKET acceptSock = INVALID_SOCKET;
 	char addrBuf[ADDR_LEN * 2] = { 0, };
+};
+
+struct ConnectContext {
+	OVERLAPPED overlapped = {};
+	EIoType ioType;
+	WSABUF wsaBuf;
+	char buf[BUFFER_SIZE];
 };
 
 struct ConnectionContext {
@@ -28,15 +47,4 @@ struct ConnectionContext {
 	RIO_BUF recvBuf;
 	RIO_BUF sendBuf;
 	ULONG index;
-};
-
-enum class ENetMode {
-	None = 0,
-	IOCP = 1,
-	RIO = 2
-};
-
-enum class EIoType {
-	Recv = 1,
-	Send = 2
 };

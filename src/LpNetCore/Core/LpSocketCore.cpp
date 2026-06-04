@@ -52,6 +52,10 @@ bool LpSocketCore::SetUpdateAcceptSocket(SOCKET socket, SOCKET listenSocket) {
 	return SetSockOpt(socket, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, &listenSocket, sizeof(listenSocket));
 }
 
+bool LpSocketCore::SetUpdateConnectSocket(SOCKET socket) {
+	return SetSockOpt(socket, SOL_SOCKET, SO_UPDATE_CONNECT_CONTEXT, NULL, 0);
+}
+
 bool LpSocketCore::SetRecvBufSize(SOCKET socket, int size) {
 	return SetSockOpt(socket, SOL_SOCKET, SO_RCVBUF, &size, sizeof(size));
 }
