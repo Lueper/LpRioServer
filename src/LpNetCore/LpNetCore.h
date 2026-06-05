@@ -11,3 +11,4 @@
 #include "Utility/LpPool.h"
 
 #include "LpNetServer.h"
+#include "LpNetClient.h"

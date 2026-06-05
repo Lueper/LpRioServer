@@ -158,6 +158,7 @@
     <ClInclude Include="Core\LpSocketCore.h" />
     <ClInclude Include="LpGlobal.h" />
     <ClInclude Include="Core\LpIocpCore.h" />
+    <ClInclude Include="LpNetClient.h" />
     <ClInclude Include="LpNetCore.h" />
     <ClInclude Include="LpNetServer.h" />
     <ClInclude Include="Core\LpRioCore.h" />
@@ -169,6 +170,7 @@
   <ItemGroup>
     <ClCompile Include="Core\LpIocpCore.cpp" />
     <ClCompile Include="Core\LpSocketCore.cpp" />
+    <ClCompile Include="LpNetClient.cpp" />
     <ClCompile Include="LpNetCore.cpp" />
     <ClCompile Include="LpNetServer.cpp" />
     <ClCompile Include="Core\LpRioCore.cpp" />

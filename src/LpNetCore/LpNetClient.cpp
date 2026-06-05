@@ -2,15 +2,15 @@
 
 #include "LpNetCore.h"
 
-LpNetServer::LpNetServer() {
+LpNetClient::LpNetClient() {
 
 }
 
-LpNetServer::~LpNetServer() {
+LpNetClient::~LpNetClient() {
 
 }
 
-bool LpNetServer::Init(ENetMode mode) {
+bool LpNetClient::Init(ENetMode mode) {
 	if (mode == ENetMode::RIO) {
 		auto rioCore = std::make_shared<LpRioCore>();
 		if (rioCore->Init())
@@ -31,17 +31,24 @@ bool LpNetServer::Init(ENetMode mode) {
 	return true;
 }
 
-void LpNetServer::Start() {
+void LpNetClient::Start() {
 	m_running = true;
 
-	LOG_INFO("Server Started");
+	LOG_INFO("Client Started");
 
-	int threadCount = std::thread::hardware_concurrency();
-	m_socketCore->StartListen(threadCount);
+	int threadCount = 1;
+	m_socketCore->StartConnect(threadCount);
 
 	for (int i = 0; i < threadCount; i++) {
 		std::unique_ptr<std::thread> thread = std::make_unique<std::thread>([this] {
 			m_socketCore->Run();
+		});
+		m_ioThreadVec.push_back(std::move(thread));
+	}
+
+	for (int i = 0; i < threadCount; i++) {
+		std::unique_ptr<std::thread> thread = std::make_unique<std::thread>([this] {
+			m_socketCore->RunClient();
 		});
 		m_ioThreadVec.push_back(std::move(thread));
 	}
@@ -53,14 +60,14 @@ void LpNetServer::Start() {
 	m_ioThreadVec.clear();
 }
 
-void LpNetServer::Stop() {
+void LpNetClient::Stop() {
 	m_running = false;
 
-	LOG_INFO("Server Stopping...");
+	LOG_INFO("Client Stopping...");
 
 	m_socketCore->Stop();
 }
 
-void LpNetServer::Release() {
-	LOG_INFO("Server Released");
+void LpNetClient::Release() {
+	LOG_INFO("Client Released");
 }

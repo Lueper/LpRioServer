@@ -6,6 +6,8 @@
 #endif
 #endif
 
+#pragma comment(lib, "ws2_32.lib")
+
 // mswsock.h보다 먼저 선언
 #include <ws2tcpip.h>
 
