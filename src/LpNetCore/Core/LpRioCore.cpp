@@ -71,10 +71,10 @@ bool LpRioCore::Init() {
 	return true;
 }
 
-void LpRioCore::StartListen(int threadCount) {
+void LpRioCore::StartListen(uint16_t port, int threadCount) {
 	m_threadCount = threadCount;
 
-	if (!Bind(m_socket, SERVER_PORT))
+	if (!Bind(m_socket, port))
 		return;
 
 	if (!Listen(m_socket))
@@ -151,7 +151,7 @@ void LpRioCore::Run() {
 }
 
 void LpRioCore::RunClient() {
-	while (true) {
+	while (m_running) {
 		std::string message;
 		std::getline(std::cin, message);
 		if (message == "exit")

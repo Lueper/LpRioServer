@@ -37,7 +37,7 @@ void LpNetServer::Start() {
 	LOG_INFO("Server Started");
 
 	int threadCount = std::thread::hardware_concurrency();
-	m_socketCore->StartListen(threadCount);
+	m_socketCore->StartListen(SERVER_PORT, threadCount);
 
 	for (int i = 0; i < threadCount; i++) {
 		std::unique_ptr<std::thread> thread = std::make_unique<std::thread>([this] {

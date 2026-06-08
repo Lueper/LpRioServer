@@ -6,7 +6,7 @@ public:
 	virtual ~LpSocketCore() = default;
 
 	virtual bool Init() = 0;
-	virtual void StartListen(int threadCount) = 0;
+	virtual void StartListen(uint16_t port, int threadCount) = 0;
 	virtual void StartConnect(int threadCount) = 0;
 	virtual void Run() = 0;
 	virtual void RunClient() = 0;

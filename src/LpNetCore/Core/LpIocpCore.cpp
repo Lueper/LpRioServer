@@ -41,10 +41,10 @@ bool LpIocpCore::Init() {
 	return true;
 }
 
-void LpIocpCore::StartListen(int threadCount) {
+void LpIocpCore::StartListen(uint16_t port, int threadCount) {
 	m_threadCount = threadCount;
 
-	if (!Bind(m_socket, SERVER_PORT))
+	if (!Bind(m_socket, port))
 		return;
 
 	if (!Listen(m_socket))
