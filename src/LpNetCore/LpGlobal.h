@@ -3,7 +3,8 @@
 // IOCP Completion Key
 const ULONG_PTR CK_SHUTDOWN = 0;
 const ULONG_PTR CK_ACCEPT = 1;
-const ULONG_PTR CK_RIO = 2;
+const ULONG_PTR CK_IO = 2;
+const ULONG_PTR CK_RIO = 3;
 
 const USHORT SERVER_PORT = 13577;
 const DWORD ADDR_LEN = sizeof(SOCKADDR_IN) + 16;
@@ -36,9 +37,10 @@ struct AcceptContext {
 
 struct ConnectContext {
 	OVERLAPPED overlapped = {};
+	SOCKET sock = INVALID_SOCKET;
 	EIoType ioType;
 	WSABUF wsaBuf;
-	char buf[BUFFER_SIZE];
+	char buf[BUFFER_SIZE] = { 0, };
 };
 
 struct ConnectionContext {

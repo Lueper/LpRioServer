@@ -118,34 +118,10 @@ void LpIocpCore::Run() {
 			case CK_ACCEPT:
 				OnAccept(actx);
 				break;
-		}
-
-		auto cctx = (ConnectContext*)overlapped;
-		if (cctx == nullptr)
-			continue;
-
-		switch (cctx->ioType) {
-			case EIoType::Connect: {
-				SetUpdateConnectSocket(actx->acceptSock);
-
-				ConnectContext* cctx = new ConnectContext();
-				cctx->ioType = EIoType::Send;
-				cctx->wsaBuf.buf = cctx->buf;
-				cctx->wsaBuf.len = BUFFER_SIZE;
-
-				DWORD recvLen = 0;
-				DWORD flags = 0;
-				if (::WSARecv(m_socket, &cctx->wsaBuf, 1, &recvLen, &flags, &cctx->overlapped, nullptr) == SOCKET_ERROR) {
-					if (::WSAGetLastError() != ERROR_IO_PENDING) {
-						LOG_ERROR("Recv Failed: ", ::WSAGetLastError());
-						Close(actx->acceptSock);
-						delete actx;
-						return;
-					}
-				}
-
-				LOG_INFO("Client Connected: ", actx->acceptSock);
-			}
+			case CK_IO:
+				auto cctx = (ConnectContext*)overlapped;
+				OnRecv(cctx, bytesTransferred);
+				break;
 		}
 	}
 }
@@ -216,8 +192,43 @@ void LpIocpCore::OnAccept(AcceptContext* actx) {
 
 	std::string ipAddress = GetIpAddress((SOCKADDR_IN&)*remoteAddr);
 
-	delete actx;
+	RegisterIocpHandle(actx->acceptSock, m_iocp, CK_IO);
+
+	ConnectContext* cctx = new ConnectContext();
+	cctx->sock = actx->acceptSock;
+	cctx->ioType = EIoType::Recv;
+	cctx->wsaBuf.buf = cctx->buf;
+	cctx->wsaBuf.len = BUFFER_SIZE;
+
+	DWORD recvLen = 0;
+	DWORD flags = 0;
+	if (::WSARecv(actx->acceptSock, &cctx->wsaBuf, 1, &recvLen, &flags, &cctx->overlapped, nullptr) == SOCKET_ERROR) {
+		if (::WSAGetLastError() != ERROR_IO_PENDING) {
+			LOG_ERROR("Recv Failed: ", ::WSAGetLastError());
+			Close(actx->acceptSock);
+			delete actx;
+			return;
+		}
+	}
+
+	LOG_INFO("Client Connected: ", actx->acceptSock);
+
+	//delete actx;
 	PostAccept();
+}
+
+void LpIocpCore::OnRecv(ConnectContext* cctx, DWORD bytesTransferred) {
+	LOG_INFO("Client Recv: ", bytesTransferred);
+
+	DWORD sendLen = 0;
+	if (::WSASend(cctx->sock, &cctx->wsaBuf, 1, &sendLen, 0, &cctx->overlapped, nullptr) == SOCKET_ERROR) {
+		if (::WSAGetLastError() != ERROR_IO_PENDING) {
+			LOG_ERROR("Send Failed: ", ::WSAGetLastError());
+			Close(cctx->sock);
+			delete cctx;
+			return;
+		}
+	}
 }
 
 void LpIocpCore::ProcessRecv(RIORESULT result) {
