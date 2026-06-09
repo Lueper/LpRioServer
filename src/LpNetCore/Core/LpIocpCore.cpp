@@ -120,7 +120,15 @@ void LpIocpCore::Run() {
 				break;
 			case CK_IO:
 				auto cctx = (ConnectContext*)overlapped;
-				OnRecv(cctx, bytesTransferred);
+
+				switch (cctx->ioType) {
+					case EIoType::Recv:
+						OnRecv(cctx, bytesTransferred);
+						break;
+					case EIoType::Send:
+						OnSend(cctx, bytesTransferred);
+						break;
+				}
 				break;
 		}
 	}
@@ -220,13 +228,33 @@ void LpIocpCore::OnAccept(AcceptContext* actx) {
 void LpIocpCore::OnRecv(ConnectContext* cctx, DWORD bytesTransferred) {
 	LOG_INFO("Client Recv: ", bytesTransferred);
 
-	DWORD sendLen = 0;
-	if (::WSASend(cctx->sock, &cctx->wsaBuf, 1, &sendLen, 0, &cctx->overlapped, nullptr) == SOCKET_ERROR) {
+		cctx->ioType = EIoType::Send;
+		cctx->wsaBuf.len = bytesTransferred;
+		DWORD sendLen = 0;
+		if (::WSASend(cctx->sock, &cctx->wsaBuf, 1, &sendLen, 0, &cctx->overlapped, nullptr) == SOCKET_ERROR) {
+			if (::WSAGetLastError() != ERROR_IO_PENDING) {
+				LOG_ERROR("Send Failed: ", ::WSAGetLastError());
+				Close(cctx->sock);
+				delete cctx;
+				return;
+			}
+		}
+}
+
+void LpIocpCore::OnSend(ConnectContext* cctx, DWORD bytesTransferred) {
+	LOG_INFO("Client Send Complete: ", bytesTransferred, " bytes.");
+
+	cctx->ioType = EIoType::Recv;
+	cctx->wsaBuf.buf = cctx->buf;
+	cctx->wsaBuf.len = BUFFER_SIZE;
+
+	DWORD recvLen = 0;
+	DWORD flags = 0;
+	if (::WSARecv(m_socket, &cctx->wsaBuf, 1, &recvLen, &flags, &cctx->overlapped, nullptr) == SOCKET_ERROR) {
 		if (::WSAGetLastError() != ERROR_IO_PENDING) {
-			LOG_ERROR("Send Failed: ", ::WSAGetLastError());
+			LOG_ERROR("Next Recv Failed: ", ::WSAGetLastError());
 			Close(cctx->sock);
 			delete cctx;
-			return;
 		}
 	}
 }
