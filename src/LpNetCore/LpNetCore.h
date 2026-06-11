@@ -9,6 +9,8 @@
 #include "Utility/LpLogger.h"
 #include "Utility/LpSingleton.h"
 #include "Utility/LpPool.h"
+#include "Utility/LpBuffer.h"
+#include "Utility/LpSpinLock.h"
 
 #include "LpNetServer.h"
 #include "LpNetClient.h"
