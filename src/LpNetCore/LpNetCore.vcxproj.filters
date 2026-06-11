@@ -48,6 +48,9 @@
     <ClInclude Include="LpNetClient.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="LpIOContext.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="Utility\LpSpinLock.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
