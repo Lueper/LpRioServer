@@ -3,6 +3,7 @@
 #include "pch.h"
 
 #include "LpGlobal.h"
+#include "LpSession.h"
 #include "Core/LpSocketCore.h"
 #include "Core/LpIocpCore.h"
 #include "Core/LpRioCore.h"
