@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "LpSpinLock.h"
+
 class LpBuffer {
 public:
 	LpBuffer(uint32_t _size);

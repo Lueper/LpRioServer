@@ -1,6 +1,6 @@
-﻿#include "LpNetCore.h"
+﻿#include <csignal>
 
-#include <csignal>
+#include "LpNetCore.h"
 
 void RegisterSignal(LpNetServer* server) {
 	static LpNetServer* lpServer = nullptr;

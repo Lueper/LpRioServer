@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
-
 #include "LpNetCore.h"
+
+#include "LpSocketCore.h"
 
 bool LpSocketCore::Startup() {
 	WSADATA wsaData;

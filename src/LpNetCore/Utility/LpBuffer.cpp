@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include "LpNetCore.h"
+#include "LpBuffer.h"
 
 LpBuffer::LpBuffer(uint32_t _size)
 	: m_maxSize(_size), m_useSize(0), m_lCur(0), m_rCur(0), m_buffer(nullptr), m_expandCount(10), m_spinLock() {

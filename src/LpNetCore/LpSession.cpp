@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
-
 #include "LpNetCore.h"
+
+#include "Utility/LpBuffer.h"
+#include "LpSession.h"
 
 LpSession::LpSession() {
 

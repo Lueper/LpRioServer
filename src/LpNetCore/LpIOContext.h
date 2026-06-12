@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "LpNetCore.h"
+#include "LpGlobal.h"
 
 struct LpIOContext : public OVERLAPPED {
 	LpIOContext(EIOType ioType) : m_ioType(ioType) {}

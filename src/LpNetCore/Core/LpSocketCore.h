@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "LpGlobal.h"
+
 class LpSocketCore {
 public:
 	LpSocketCore() = default;

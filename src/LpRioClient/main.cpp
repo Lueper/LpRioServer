@@ -1,6 +1,6 @@
-﻿#include "LpNetCore.h"
+﻿#include <csignal>
 
-#include <csignal>
+#include "LpNetCore.h"
 
 void RegisterSignal(LpNetClient* client) {
 	static LpNetClient* lpClient = nullptr;
