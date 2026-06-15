@@ -12,15 +12,15 @@ bool LpSocketCore::Cleanup() {
 	return SOCKET_ERROR != ::WSACleanup();
 }
 
-SOCKET LpSocketCore::CreateIocpSocket() {
+SOCKET LpSocketCore::CreateSocket() {
 	return ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 }
 
-HANDLE LpSocketCore::CreateIocpHandle() {
+HANDLE LpSocketCore::CreateHandle() {
 	return ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 }
 
-bool LpSocketCore::RegisterIocpHandle(SOCKET socket, HANDLE iocp, ULONG_PTR completionKey) {
+bool LpSocketCore::RegisterSocket(SOCKET socket, HANDLE iocp, ULONG_PTR completionKey) {
 	return NULL != ::CreateIoCompletionPort((HANDLE)socket, iocp, completionKey, 0);
 }
 
@@ -98,11 +98,11 @@ bool LpSocketCore::CloseHandle(HANDLE handle) {
 	return true;
 }
 
-bool LpSocketCore::PopIocpEvent(HANDLE iocp, DWORD& bytes, ULONG_PTR& completionKey, LPOVERLAPPED& overlapped, DWORD timeoutMs) {
+bool LpSocketCore::PopIocpContext(HANDLE iocp, DWORD& bytes, ULONG_PTR& completionKey, LPOVERLAPPED& overlapped, DWORD timeoutMs) {
 	return ::GetQueuedCompletionStatus(iocp, &bytes, &completionKey, &overlapped, timeoutMs);
 }
 
-bool LpSocketCore::PushIocpEvent(HANDLE iocp, DWORD bytes, ULONG_PTR completionKey, OVERLAPPED* overlapped) {
+bool LpSocketCore::PushIocpContext(HANDLE iocp, DWORD bytes, ULONG_PTR completionKey, OVERLAPPED* overlapped) {
 	return ::PostQueuedCompletionStatus(iocp, bytes, completionKey, overlapped);
 }
 

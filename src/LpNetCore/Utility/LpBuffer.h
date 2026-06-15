@@ -19,7 +19,6 @@ public:
 	uint32_t GetOffset();
 
 private:
-	std::mutex m_mutex;
 	LpSpinLock m_spinLock;
 
 	uint32_t m_maxSize;

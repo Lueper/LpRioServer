@@ -17,7 +17,7 @@ LpIocpCore::~LpIocpCore() {
 }
 
 bool LpIocpCore::Init() {
-	m_socket = CreateIocpSocket();
+	m_socket = CreateSocket();
 	if (m_socket == INVALID_SOCKET)
 		return false;
 
@@ -30,12 +30,12 @@ bool LpIocpCore::Init() {
 	if (!LoadExFunction(m_socket, WSAID_CONNECTEX, (LPVOID*)&ConnectEx))
 		return false;
 
-	m_iocp = CreateIocpHandle();
+	m_iocp = CreateHandle();
 	if (m_iocp == NULL)
 		return false;
 
-	if (!RegisterIocpHandle(m_socket, m_iocp, CK_ACCEPT))
-		return false;
+		if (!RegisterSocket(m_socket, m_iocp, CK_ACCEPT))
+			return false;
 
 	if (!SetReuseAddr(m_socket, true))
 		return false;
@@ -71,7 +71,7 @@ void LpIocpCore::StartConnect(int threadCount) {
 	addr.sin_port = ::htons(SERVER_PORT);
 
 	ConnectContext* cctx = new ConnectContext();
-	cctx->ioType = EIoType::Connect;
+	cctx->ioType = EIOType::Connect;
 
 	if (!ConnectEx(m_socket, (SOCKADDR*)&addr, sizeof(addr), NULL, 0, NULL, &cctx->overlapped)) {
 		if (GetLastError() != ERROR_IO_PENDING) {
@@ -93,14 +93,10 @@ void LpIocpCore::Run() {
 		ULONG_PTR completionKey = 0;
 		OVERLAPPED* overlapped = nullptr;
 
-		BOOL success = PopIocpEvent(m_iocp, bytesTransferred, completionKey, overlapped, INFINITE);
-
-		if (completionKey == CK_SHUTDOWN)
-			break;
+		BOOL success = PopIocpContext(m_iocp, bytesTransferred, completionKey, overlapped, INFINITE);
 
 		if (overlapped == nullptr) {
-			int error = GetLastError();
-			LOG_ERROR("overlapped is null: ", error);
+			LOG_ERROR("overlapped is null: ", GetLastError());
 			continue;
 		}
 
@@ -124,10 +120,10 @@ void LpIocpCore::Run() {
 				auto cctx = (ConnectContext*)overlapped;
 
 				switch (cctx->ioType) {
-					case EIoType::Recv:
+					case EIOType::Recv:
 						OnRecv(cctx, bytesTransferred);
 						break;
-					case EIoType::Send:
+					case EIOType::Send:
 						OnSend(cctx, bytesTransferred);
 						break;
 				}
@@ -145,7 +141,7 @@ void LpIocpCore::RunClient() {
 
 		DWORD bytes = 0;
 		ConnectContext* cctx = new ConnectContext();
-		cctx->ioType = EIoType::Send;
+		cctx->ioType = EIOType::Send;
 		cctx->wsaBuf.buf = cctx->buf;
 		cctx->wsaBuf.len = BUFFER_SIZE;
 
@@ -168,14 +164,14 @@ void LpIocpCore::Stop() {
 	m_running = false;
 
 	for (int i = 0; i < m_threadCount; i++) {
-		PushIocpEvent(m_iocp, 0, CK_SHUTDOWN, nullptr);
+		PushIocpContext(m_iocp, 0, CK_SHUTDOWN, nullptr);
 	}
 }
 
 void LpIocpCore::PostAccept() {
 	AcceptContext* actx = new AcceptContext();
 
-	actx->acceptSock = CreateIocpSocket();
+	actx->acceptSock = CreateSocket();
 	if (actx->acceptSock == INVALID_SOCKET) {
 		delete actx;
 		return;
@@ -246,7 +242,7 @@ void LpIocpCore::OnRecv(ConnectContext* cctx, DWORD bytesTransferred) {
 void LpIocpCore::OnSend(ConnectContext* cctx, DWORD bytesTransferred) {
 	LOG_INFO("Client Send Complete: ", bytesTransferred, " bytes.");
 
-	cctx->ioType = EIoType::Recv;
+	cctx->ioType = EIOType::Recv;
 	cctx->wsaBuf.buf = cctx->buf;
 	cctx->wsaBuf.len = BUFFER_SIZE;
 

@@ -15,6 +15,6 @@ private:
 
 	std::atomic<bool> m_connected = false;
 
-	LpBuffer* m_recvBuffer;
-	LpBuffer* m_sendBuffer;
+	LpBuffer* m_recvBuffer = nullptr;
+	LpBuffer* m_sendBuffer = nullptr;
 };

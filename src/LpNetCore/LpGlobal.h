@@ -23,10 +23,12 @@ enum class ENetMode {
 	RIO = 2
 };
 
-enum class EIoType {
+enum class EIOType {
+	Accept = 0,
 	Connect = 1,
-	Recv = 2,
-	Send = 3
+	Disconnect = 2,
+	Recv = 3,
+	Send = 4
 };
 
 struct AcceptContext {
@@ -38,7 +40,7 @@ struct AcceptContext {
 struct ConnectContext {
 	OVERLAPPED overlapped = {};
 	SOCKET sock = INVALID_SOCKET;
-	EIoType ioType;
+	EIOType ioType;
 	WSABUF wsaBuf;
 	char buf[BUFFER_SIZE] = { 0, };
 };

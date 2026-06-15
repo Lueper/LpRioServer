@@ -42,11 +42,11 @@ bool LpRioCore::Init() {
 	if (!LoadExFunctionTable(m_socket, WSAID_MULTIPLE_RIO, m_rio))
 		return false;
 
-	m_iocp = CreateIocpHandle();
+	m_iocp = CreateHandle();
 	if (m_iocp == NULL)
 		return false;
 
-	if (!RegisterIocpHandle(m_socket, m_iocp, CK_ACCEPT))
+	if (!RegisterSocket(m_socket, m_iocp, CK_ACCEPT))
 		return false;
 
 	m_recvPool = (char*)VirtualAlloc(NULL, BUFFER_POOL_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
@@ -99,7 +99,7 @@ void LpRioCore::StartConnect(int threadCount) {
 	addr.sin_port = ::htons(SERVER_PORT);
 
 	ConnectContext* cctx = new ConnectContext();
-	cctx->ioType = EIoType::Connect;
+	cctx->ioType = EIOType::Connect;
 
 	if (!ConnectEx(m_socket, (SOCKADDR*)&addr, sizeof(addr), NULL, 0, NULL, &cctx->overlapped)) {
 		if (GetLastError() != ERROR_IO_PENDING) {
@@ -118,7 +118,7 @@ void LpRioCore::Run() {
 		ULONG_PTR completionKey = 0;
 		OVERLAPPED* overlapped = nullptr;
 
-		BOOL success = PopIocpEvent(m_iocp, bytesTransferred, completionKey, overlapped, INFINITE);
+		BOOL success = PopIocpContext(m_iocp, bytesTransferred, completionKey, overlapped, INFINITE);
 
 		if (completionKey == CK_SHUTDOWN)
 			break;
@@ -160,7 +160,7 @@ void LpRioCore::RunClient() {
 			break;
 
 		ConnectContext* cctx = new ConnectContext();
-		cctx->ioType = EIoType::Send;
+		cctx->ioType = EIOType::Send;
 
 		memcpy(&cctx->wsaBuf, message.c_str(), message.length());
 		cctx->wsaBuf.len = static_cast<ULONG>(message.length());
@@ -181,14 +181,14 @@ void LpRioCore::Stop() {
 	m_running = false;
 
 	for (int i = 0; i < m_threadCount; i++) {
-		PushIocpEvent(m_iocp, 0, CK_SHUTDOWN, nullptr);
+		PushIocpContext(m_iocp, 0, CK_SHUTDOWN, nullptr);
 	}
 }
 
 void LpRioCore::PostAccept() {
 	AcceptContext* actx = new AcceptContext();
 
-	actx->acceptSock = CreateIocpSocket();
+	actx->acceptSock = CreateSocket();
 	if (actx->acceptSock == INVALID_SOCKET) {
 		delete actx;
 		return;
@@ -261,19 +261,19 @@ void LpRioCore::OnRioCompletion() {
 			continue;
 		}
 
-		EIoType ioType = (EIoType)results[i].RequestContext;
+		EIOType ioType = (EIOType)results[i].RequestContext;
 		switch (ioType) {
-			case EIoType::Recv:
+			case EIOType::Recv:
 				ProcessRecv(results[i]);
 
-				if (m_rio.RIOReceive(cctx->rq, &cctx->recvBuf, 1, 0, (PVOID)EIoType::Recv) == false) {
+				if (m_rio.RIOReceive(cctx->rq, &cctx->recvBuf, 1, 0, (PVOID)EIOType::Recv) == false) {
 					DWORD error = GetLastError();
 					LOG_ERROR("RIOReceive error: %lu", error);
 					Close(cctx->sock);
 					delete cctx;
 				}
 				break;
-			case EIoType::Send:
+			case EIOType::Send:
 				ProcessSend(results[i]);
 				break;
 		}

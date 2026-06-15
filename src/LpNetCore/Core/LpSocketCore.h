@@ -20,10 +20,10 @@ protected:
 	bool Startup();
 	bool Cleanup();
 
-	SOCKET CreateIocpSocket();
-	HANDLE CreateIocpHandle();
+	SOCKET CreateSocket();
+	HANDLE CreateHandle();
 
-	bool RegisterIocpHandle(SOCKET socket, HANDLE iocp, ULONG_PTR completionKey = 0);
+	bool RegisterSocket(SOCKET socket, HANDLE iocp, ULONG_PTR completionKey = 0);
 	bool LoadExFunction(SOCKET socket, GUID guid, LPVOID* outFunc);
 
 	bool SetSockOpt(SOCKET socket, int level, int optName, const LPVOID optVal, int optLen);
@@ -40,8 +40,8 @@ protected:
 	bool Close(SOCKET socket);
 	bool CloseHandle(HANDLE handle);
 
-	bool PopIocpEvent(HANDLE iocp, DWORD& bytes, ULONG_PTR& completionKey, LPOVERLAPPED& overlapped, DWORD timeoutMs = INFINITE);
-	bool PushIocpEvent(HANDLE iocp, DWORD bytes = 0, ULONG_PTR completionKey = 0, OVERLAPPED* overlapped = nullptr);
+	bool PopIocpContext(HANDLE iocp, DWORD& bytes, ULONG_PTR& completionKey, LPOVERLAPPED& overlapped, DWORD timeoutMs = INFINITE);
+	bool PushIocpContext(HANDLE iocp, DWORD bytes = 0, ULONG_PTR completionKey = 0, OVERLAPPED* overlapped = nullptr);
 
 	int GetLastError();
 	std::string GetIpAddress(SOCKADDR_IN addr);
