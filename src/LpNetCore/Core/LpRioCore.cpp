@@ -114,11 +114,11 @@ void LpRioCore::StartConnect(int threadCount) {
 
 void LpRioCore::Run() {
 	while (m_running) {
-		DWORD bytesTransferred = 0;
+		DWORD bytes = 0;
 		ULONG_PTR completionKey = 0;
 		OVERLAPPED* overlapped = nullptr;
 
-		BOOL success = PopIocpContext(m_iocp, bytesTransferred, completionKey, overlapped, INFINITE);
+		BOOL success = PopIocpContext(m_iocp, bytes, completionKey, overlapped, INFINITE);
 
 		if (completionKey == CK_SHUTDOWN)
 			break;

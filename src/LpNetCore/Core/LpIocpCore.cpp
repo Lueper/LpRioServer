@@ -89,11 +89,11 @@ void LpIocpCore::StartConnect(int threadCount) {
 
 void LpIocpCore::Run() {
 	while (m_running) {
-		DWORD bytesTransferred = 0;
+		DWORD bytes = 0;
 		ULONG_PTR completionKey = 0;
 		OVERLAPPED* overlapped = nullptr;
 
-		BOOL success = PopIocpContext(m_iocp, bytesTransferred, completionKey, overlapped, INFINITE);
+		BOOL success = PopIocpContext(m_iocp, bytes, completionKey, overlapped, INFINITE);
 
 		if (overlapped == nullptr) {
 			LOG_ERROR("overlapped is null: ", GetLastError());
@@ -121,10 +121,10 @@ void LpIocpCore::Run() {
 
 				switch (cctx->ioType) {
 					case EIOType::Recv:
-						OnRecv(cctx, bytesTransferred);
+						OnRecv(cctx, bytes);
 						break;
 					case EIOType::Send:
-						OnSend(cctx, bytesTransferred);
+						OnSend(cctx, bytes);
 						break;
 				}
 				break;
@@ -239,8 +239,8 @@ void LpIocpCore::OnRecv(ConnectContext* cctx, DWORD bytesTransferred) {
 		}
 }
 
-void LpIocpCore::OnSend(ConnectContext* cctx, DWORD bytesTransferred) {
-	LOG_INFO("Client Send Complete: ", bytesTransferred, " bytes.");
+void LpIocpCore::OnSend(ConnectContext* cctx, DWORD bytes) {
+	LOG_INFO("Client Send Complete: ", bytes, " bytes.");
 
 	cctx->ioType = EIOType::Recv;
 	cctx->wsaBuf.buf = cctx->buf;

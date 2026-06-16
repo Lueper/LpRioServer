@@ -17,8 +17,8 @@ public:
 private:
 	void PostAccept();
 	void OnAccept(AcceptContext* actx);
-	void OnRecv(ConnectContext* cctx, DWORD bytesTransferred);
-	void OnSend(ConnectContext* cctx, DWORD bytesTransferred);
+	void OnRecv(ConnectContext* cctx, DWORD bytes);
+	void OnSend(ConnectContext* cctx, DWORD bytes);
 
 	void ProcessRecv(RIORESULT result);
 	void ProcessSend(RIORESULT result);
