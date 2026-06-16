@@ -98,6 +98,34 @@ bool LpSocketCore::CloseHandle(HANDLE handle) {
 	return true;
 }
 
+bool LpSocketCore::Recv(SOCKET socket, WSABUF& wsaBuf, LPOVERLAPPED overlapped) {
+	DWORD bytes = 0;
+	DWORD flags = 0;
+
+	if (::WSARecv(socket, &wsaBuf, 1, &bytes, &flags, overlapped, nullptr) == SOCKET_ERROR) {
+		if (GetLastError() != ERROR_IO_PENDING) {
+			Close(socket);
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool LpSocketCore::Send(SOCKET socket, WSABUF& wsaBuf, LPOVERLAPPED overlapped) {
+	DWORD bytes = 0;
+	DWORD flags = 0;
+
+	if (::WSASend(socket, &wsaBuf, 1, &bytes, flags, overlapped, nullptr) == SOCKET_ERROR) {
+		if (GetLastError() != ERROR_IO_PENDING) {
+			Close(socket);
+			return false;
+		}
+	}
+
+	return true;
+}
+
 bool LpSocketCore::PopIocpContext(HANDLE iocp, DWORD& bytes, ULONG_PTR& completionKey, LPOVERLAPPED& overlapped, DWORD timeoutMs) {
 	return ::GetQueuedCompletionStatus(iocp, &bytes, &completionKey, &overlapped, timeoutMs);
 }

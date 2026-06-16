@@ -40,6 +40,9 @@ protected:
 	bool Close(SOCKET socket);
 	bool CloseHandle(HANDLE handle);
 
+	bool Recv(SOCKET socket, WSABUF& wsaBuf, LPOVERLAPPED overlapped);
+	bool Send(SOCKET socket, WSABUF& wsaBuf, LPOVERLAPPED overlapped);
+
 	bool PopIocpContext(HANDLE iocp, DWORD& bytes, ULONG_PTR& completionKey, LPOVERLAPPED& overlapped, DWORD timeoutMs = INFINITE);
 	bool PushIocpContext(HANDLE iocp, DWORD bytes = 0, ULONG_PTR completionKey = 0, OVERLAPPED* overlapped = nullptr);
 
