@@ -34,8 +34,8 @@ bool LpIocpCore::Init() {
 	if (m_iocp == NULL)
 		return false;
 
-		if (!RegisterSocket(m_socket, m_iocp, CK_ACCEPT))
-			return false;
+	if (!RegisterSocket(m_socket, m_iocp, CK_ACCEPT))
+		return false;
 
 	if (!SetReuseAddr(m_socket, true))
 		return false;
@@ -72,8 +72,8 @@ void LpIocpCore::StartConnect(int threadCount) {
 
 	ConnectContext* cctx = new ConnectContext();
 	cctx->ioType = EIOType::Connect;
-
-	if (!ConnectEx(m_socket, (SOCKADDR*)&addr, sizeof(addr), NULL, 0, NULL, &cctx->overlapped)) {
+	DWORD bytes = 0;
+	if (!ConnectEx(m_socket, (SOCKADDR*)&addr, sizeof(addr), NULL, 0, &bytes, &cctx->overlapped)) {
 		if (GetLastError() != ERROR_IO_PENDING) {
 			LOG_ERROR("Connect Failed: ", GetLastError());
 			Close(m_socket);
@@ -148,12 +148,7 @@ void LpIocpCore::RunClient() {
 		memcpy(&cctx->buf, message.c_str(), message.length());
 		cctx->wsaBuf.len = static_cast<ULONG>(message.length());
 
-		WSASend(
-			m_socket,
-			&cctx->wsaBuf,
-			1, &bytes, 0,
-			&cctx->overlapped,
-			NULL);
+		Send(m_socket, cctx->wsaBuf, &cctx->overlapped);
 	}
 }
 
@@ -198,45 +193,38 @@ void LpIocpCore::OnAccept(AcceptContext* actx) {
 
 	std::string ipAddress = GetIpAddress((SOCKADDR_IN&)*remoteAddr);
 
-	RegisterIocpHandle(actx->acceptSock, m_iocp, CK_IO);
+	RegisterSocket(actx->acceptSock, m_iocp, CK_IO);
 
 	ConnectContext* cctx = new ConnectContext();
 	cctx->sock = actx->acceptSock;
-	cctx->ioType = EIoType::Recv;
+	cctx->ioType = EIOType::Recv;
 	cctx->wsaBuf.buf = cctx->buf;
 	cctx->wsaBuf.len = BUFFER_SIZE;
 
-	DWORD recvLen = 0;
-	DWORD flags = 0;
-	if (::WSARecv(actx->acceptSock, &cctx->wsaBuf, 1, &recvLen, &flags, &cctx->overlapped, nullptr) == SOCKET_ERROR) {
-		if (::WSAGetLastError() != ERROR_IO_PENDING) {
-			LOG_ERROR("Recv Failed: ", ::WSAGetLastError());
-			Close(actx->acceptSock);
-			delete actx;
-			return;
-		}
-	}
+	Recv(actx->acceptSock, cctx->wsaBuf, &cctx->overlapped);
 
 	LOG_INFO("Client Connected: ", actx->acceptSock);
 
-	//delete actx;
 	PostAccept();
 }
 
-void LpIocpCore::OnRecv(ConnectContext* cctx, DWORD bytesTransferred) {
-	LOG_INFO("Client Recv: ", bytesTransferred);
+void LpIocpCore::OnRecv(ConnectContext* cctx, DWORD bytes) {
+	if (bytes == 0) {
+		LOG_INFO("Client disconnected clean. Socket: ", cctx->sock);
+		Close(cctx->sock);
+		delete cctx;
+		return;
+	}
 
-		cctx->ioType = EIoType::Send;
-		cctx->wsaBuf.len = bytesTransferred;
-		DWORD sendLen = 0;
-		if (::WSASend(cctx->sock, &cctx->wsaBuf, 1, &sendLen, 0, &cctx->overlapped, nullptr) == SOCKET_ERROR) {
-			if (::WSAGetLastError() != ERROR_IO_PENDING) {
-				LOG_ERROR("Send Failed: ", ::WSAGetLastError());
-				Close(cctx->sock);
-				delete cctx;
-				return;
-			}
-		}
+	if (cctx->ioType != EIOType::Recv)
+		return;
+
+	LOG_INFO("Client Recv: ", bytes);
+
+	cctx->ioType = EIOType::Send;
+	cctx->wsaBuf.len = bytes;
+
+	Send(cctx->sock, cctx->wsaBuf, &cctx->overlapped);
 }
 
 void LpIocpCore::OnSend(ConnectContext* cctx, DWORD bytes) {
@@ -246,15 +234,7 @@ void LpIocpCore::OnSend(ConnectContext* cctx, DWORD bytes) {
 	cctx->wsaBuf.buf = cctx->buf;
 	cctx->wsaBuf.len = BUFFER_SIZE;
 
-	DWORD recvLen = 0;
-	DWORD flags = 0;
-	if (::WSARecv(m_socket, &cctx->wsaBuf, 1, &recvLen, &flags, &cctx->overlapped, nullptr) == SOCKET_ERROR) {
-		if (::WSAGetLastError() != ERROR_IO_PENDING) {
-			LOG_ERROR("Next Recv Failed: ", ::WSAGetLastError());
-			Close(cctx->sock);
-			delete cctx;
-		}
-	}
+	Recv(m_socket, cctx->wsaBuf, &cctx->overlapped);
 }
 
 void LpIocpCore::ProcessRecv(RIORESULT result) {

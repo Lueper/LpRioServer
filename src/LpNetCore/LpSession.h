@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "Utility/LpBuffer.h"
+
 class LpSession {
 public:
 	LpSession();
