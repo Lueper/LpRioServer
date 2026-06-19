@@ -156,7 +156,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Core\LpSocketCore.h" />
+    <ClInclude Include="LpAcceptor.h" />
+    <ClInclude Include="LpConnector.h" />
     <ClInclude Include="LpSessionPool.h" />
+    <ClInclude Include="LpSocketChannel.h" />
     <ClInclude Include="Utility\LpBuffer.h" />
     <ClInclude Include="LpIOContext.h" />
     <ClInclude Include="LpGlobal.h" />
@@ -175,7 +178,10 @@
   <ItemGroup>
     <ClCompile Include="Core\LpIocpCore.cpp" />
     <ClCompile Include="Core\LpSocketCore.cpp" />
+    <ClCompile Include="LpAcceptor.cpp" />
+    <ClCompile Include="LpConnector.cpp" />
     <ClCompile Include="LpSessionPool.cpp" />
+    <ClCompile Include="LpSocketChannel.cpp" />
     <ClCompile Include="Utility\LpBuffer.cpp" />
     <ClCompile Include="LpNetClient.cpp" />
     <ClCompile Include="LpNetCore.cpp" />

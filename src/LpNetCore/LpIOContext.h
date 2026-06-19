@@ -1,11 +1,13 @@
 ﻿#pragma once
 
 #include "LpGlobal.h"
+#include "LpSession.h"
 
 struct LpIOContext : public OVERLAPPED {
 	LpIOContext(EIOType ioType) : m_ioType(ioType) {}
 
 	EIOType m_ioType;
+	std::shared_ptr<LpSession> m_session = nullptr;
 };
 
 struct LpAcceptContext : public LpIOContext {
