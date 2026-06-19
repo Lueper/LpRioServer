@@ -2,7 +2,6 @@
 #include "LpNetCore.h"
 
 #include "LpConnector.h"
-#include "LpSession.h"
 
 LpConnector::LpConnector() {
 }

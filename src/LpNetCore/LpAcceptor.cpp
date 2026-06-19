@@ -2,7 +2,6 @@
 #include "LpNetCore.h"
 
 #include "LpAcceptor.h"
-#include "LpSession.h"
 
 LpAcceptor::LpAcceptor() {
 }

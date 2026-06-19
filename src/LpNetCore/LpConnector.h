@@ -1,7 +1,8 @@
 ﻿#pragma once
 
+#include "LpSession.h"
+
 struct LpIOContext;
-class LpSession;
 
 class LpConnector : LpSession {
 public:

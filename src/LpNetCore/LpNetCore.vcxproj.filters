@@ -63,9 +63,6 @@
     <ClInclude Include="LpSessionPool.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LpSocketChannel.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="LpAcceptor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -105,9 +102,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="LpSessionPool.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="LpSocketChannel.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="LpAcceptor.cpp">
